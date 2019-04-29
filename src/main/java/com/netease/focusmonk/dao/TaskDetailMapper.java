@@ -3,7 +3,9 @@ package com.netease.focusmonk.dao;
 import com.netease.focusmonk.model.TaskDetail;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface TaskDetailMapper {
     int deleteByPrimaryKey(Integer id);
@@ -18,6 +20,6 @@ public interface TaskDetailMapper {
 
     int updateByPrimaryKey(TaskDetail record);
 
-    List<TaskDetail> selectBySummaryId(Integer summaryId);
+    List<TaskDetail> selectBySummaryIdAndUserId(Map<String ,Integer> map);
 
 }

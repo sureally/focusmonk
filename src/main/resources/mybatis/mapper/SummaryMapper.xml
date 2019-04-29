@@ -92,6 +92,6 @@
   </update>
   
   <select id="selectByUserId" parameterType="java.lang.Integer" resultType="com.netease.focusmonk.model.Summary">
-    SELECT * FROM summary WHERE user_id = #{userId}
+    SELECT * FROM summary WHERE user_id = #{userId} ORDER BY summary_day DESC
   </select>
 </mapper>
