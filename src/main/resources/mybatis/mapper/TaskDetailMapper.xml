@@ -161,4 +161,8 @@
       type = #{type,jdbcType=TINYINT}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectBySummaryId" parameterType="java.lang.Integer" resultType="com.netease.focusmonk.model.TaskDetail">
+    SELECT * FROM task_detail WHERE summary_id = #{summaryId}
+  </select>
 </mapper>
