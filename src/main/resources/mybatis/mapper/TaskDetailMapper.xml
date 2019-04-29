@@ -162,7 +162,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="selectBySummaryId" parameterType="java.lang.Integer" resultType="com.netease.focusmonk.model.TaskDetail">
-    SELECT * FROM task_detail WHERE summary_id = #{summaryId}
+  <select id="selectBySummaryIdAndUserId" parameterType="java.util.Map" resultType="com.netease.focusmonk.model.TaskDetail">
+    SELECT * FROM task_detail WHERE summary_id = #{summaryId} AND user_id = #{userId}
   </select>
 </mapper>

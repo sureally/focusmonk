@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class PersonCenterController {
     private SummaryServiceImpl summaryService;
 
     /**
-     * 时间详情查询接口
+     * 每日详情查询接口
      * @param request
      * @param summaryId
      * @return
@@ -45,8 +46,11 @@ public class PersonCenterController {
      */
     @ResponseBody
     @RequestMapping(value="/showTasksDetails",method = RequestMethod.GET)
-    public JsonResult showTasks(HttpServletRequest request,int summaryId) throws Exception{
-        List<TaskDetail> taskDetailList=taskDetailService.getTaskDetail(1);
+    public JsonResult showTasks(HttpServletRequest request,int summaryId,int userId) throws Exception{
+        HashMap<String,Integer> hashMap = new HashMap<>();
+        hashMap.put("summaryId",summaryId);
+        hashMap.put("userId",userId);
+        List<TaskDetail> taskDetailList=taskDetailService.getTaskDetail(hashMap);
         JsonResult jsonResult = new JsonResult(ResultCode.SUCCESS.getCode(),ResultCode.SUCCESS.getMessage(),taskDetailList);
         return jsonResult;
     }
