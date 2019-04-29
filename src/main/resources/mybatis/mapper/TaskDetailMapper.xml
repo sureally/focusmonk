@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.focusmonk.dao.TaskDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.netease.focusmonk.model.TaskDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="summary_id" property="summaryId" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="duration_time" property="durationTime" jdbcType="INTEGER" />
+    <result column="plan_time" property="planTime" jdbcType="INTEGER" />
+    <result column="task" property="task" jdbcType="VARCHAR" />
+    <result column="task_state" property="taskState" jdbcType="TINYINT" />
+    <result column="book_num" property="bookNum" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, summary_id, start_time, end_time, duration_time, plan_time, task, task_state, 
+    book_num, type
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_detail
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from task_detail
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.netease.focusmonk.model.TaskDetail" >
+    insert into task_detail (id, user_id, summary_id, 
+      start_time, end_time, duration_time, 
+      plan_time, task, task_state, 
+      book_num, type)
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{summaryId,jdbcType=INTEGER}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{durationTime,jdbcType=INTEGER}, 
+      #{planTime,jdbcType=INTEGER}, #{task,jdbcType=VARCHAR}, #{taskState,jdbcType=TINYINT}, 
+      #{bookNum,jdbcType=INTEGER}, #{type,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.netease.focusmonk.model.TaskDetail" >
+    insert into task_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="summaryId != null" >
+        summary_id,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="durationTime != null" >
+        duration_time,
+      </if>
+      <if test="planTime != null" >
+        plan_time,
+      </if>
+      <if test="task != null" >
+        task,
+      </if>
+      <if test="taskState != null" >
+        task_state,
+      </if>
+      <if test="bookNum != null" >
+        book_num,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="summaryId != null" >
+        #{summaryId,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="durationTime != null" >
+        #{durationTime,jdbcType=INTEGER},
+      </if>
+      <if test="planTime != null" >
+        #{planTime,jdbcType=INTEGER},
+      </if>
+      <if test="task != null" >
+        #{task,jdbcType=VARCHAR},
+      </if>
+      <if test="taskState != null" >
+        #{taskState,jdbcType=TINYINT},
+      </if>
+      <if test="bookNum != null" >
+        #{bookNum,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.netease.focusmonk.model.TaskDetail" >
+    update task_detail
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="summaryId != null" >
+        summary_id = #{summaryId,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="durationTime != null" >
+        duration_time = #{durationTime,jdbcType=INTEGER},
+      </if>
+      <if test="planTime != null" >
+        plan_time = #{planTime,jdbcType=INTEGER},
+      </if>
+      <if test="task != null" >
+        task = #{task,jdbcType=VARCHAR},
+      </if>
+      <if test="taskState != null" >
+        task_state = #{taskState,jdbcType=TINYINT},
+      </if>
+      <if test="bookNum != null" >
+        book_num = #{bookNum,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.netease.focusmonk.model.TaskDetail" >
+    update task_detail
+    set user_id = #{userId,jdbcType=INTEGER},
+      summary_id = #{summaryId,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      duration_time = #{durationTime,jdbcType=INTEGER},
+      plan_time = #{planTime,jdbcType=INTEGER},
+      task = #{task,jdbcType=VARCHAR},
+      task_state = #{taskState,jdbcType=TINYINT},
+      book_num = #{bookNum,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
