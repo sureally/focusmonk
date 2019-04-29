@@ -134,4 +134,10 @@ public class JsonResult {
             this.desc = desc;
             this.detail = detail;
         }
+
+        public JsonResult(ResultCode resultCode, Object detail) {
+            this.status = resultCode.getCode();
+            this.desc = resultCode.getMessage();
+            this.detail = detail;
+        }
 }
