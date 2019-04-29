@@ -28,7 +28,7 @@ public class WhiteNoiseElementController {
      * 返回所有白噪声元素
      * @return
      */
-    @RequestMapping(value = "/all", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/selectAll", method = RequestMethod.GET)
     public JsonResult allWhiteNoiseElement() {
         List<WhiteNoiseElement> wnes = whiteNoiseElementServiceImpl.listAll();
         return new JsonResult(ResultCode.SUCCESS, wnes);
