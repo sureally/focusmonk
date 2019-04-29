@@ -3,6 +3,7 @@ package com.netease.focusmonk.controller;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.SocketMsgCode;
 import com.netease.focusmonk.handler.DeviceWebSocketHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpSession;
  * @Date 2019-04-29
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/SDSController")
 public class SDSController {
@@ -30,7 +32,6 @@ public class SDSController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public JsonResult login(@RequestParam(value = "username") String username, HttpServletRequest request) throws Exception {
-
         HttpSession session = request.getSession();
         // 生成登录token
         session.setAttribute("username", username);
