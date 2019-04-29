@@ -1,7 +1,5 @@
 package com.netease.focusmonk.common;
 
-import org.omg.CORBA.UNKNOWN;
-
 /**
  * @author hejiecheng
  * @Date 2019-04-28
