@@ -10,6 +10,8 @@ public enum ResultCode {
     PARAM_ERROR("000001", "invalid parameter"),
     BUSINESS_ERROR("000002", "business error"),
     WHITE_NOISE_ERROR("005002", "white noise error"),
+    CODE_INVALID("001001", "code invalid"),
+    CODE_ERROR("001002", "code error"),
     UNKNOWN("999999", "unknow error");
 
     private String code;
