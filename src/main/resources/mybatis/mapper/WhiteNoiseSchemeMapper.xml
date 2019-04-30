@@ -21,9 +21,13 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.netease.focusmonk.model.WhiteNoiseScheme" >
-    insert into white_noise_scheme (id, user_id, name, 
+-- 为了获取插入此条数据对应的自增主键值
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into white_noise_scheme (id, user_id, name,
       speed)
-    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},
       #{speed,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.focusmonk.model.WhiteNoiseScheme" >
