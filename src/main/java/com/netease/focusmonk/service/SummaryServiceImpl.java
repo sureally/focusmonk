@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -40,7 +41,9 @@ public class SummaryServiceImpl {
         return summaryMapper.selectTodaySummaryByUserId(userId);
     }
 
+    //累计经书卷数和学习时长
     public void accumulateBookAndTime(int summaryId, Integer bookNum, Integer durationTime) throws GeneralException {
+
         Summary summary = summaryMapper.selectByPrimaryKey(summaryId);
 
         if (summary == null) {
@@ -51,6 +54,11 @@ public class SummaryServiceImpl {
         summary.setSumBook(summary.getSumBook() + bookNum);
 
         summaryMapper.updateByPrimaryKeySelective(summary);
+    }
+
+    //根据前端请求数据中的学习起始时间、用户ID，获取summary对象
+    public Summary getSummaryByUserIdAndDay(Date startTime, Integer userId) throws GeneralException {
+        return summaryMapper.selectSummaryByUserIdAndDay(startTime, userId);
     }
     // KFH End
 }
