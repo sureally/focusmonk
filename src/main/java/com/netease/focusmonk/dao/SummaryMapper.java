@@ -18,4 +18,8 @@ public interface SummaryMapper {
     int updateByPrimaryKey(Summary record);
 
     List<Summary> selectByUserId(Integer userId);
+
+    // Start Write By KHF.
+    Summary selectTodaySummaryByUserId(int userId);
+    // End
 }
