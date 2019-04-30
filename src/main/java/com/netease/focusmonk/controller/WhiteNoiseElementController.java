@@ -1,6 +1,7 @@
 package com.netease.focusmonk.controller;
 
 import com.netease.focusmonk.common.JsonResult;
+import com.netease.focusmonk.common.ResultCode;
 import com.netease.focusmonk.model.WhiteNoiseElement;
 import com.netease.focusmonk.service.WhiteNoiseElementServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +34,8 @@ public class WhiteNoiseElementController {
     public JsonResult allWhiteNoiseElement() {
         List<WhiteNoiseElement> wnes = whiteNoiseElementServiceImpl.listAll();
         if (wnes == null) {
-            log.error("未查询到白噪声元素");
-            JsonResult.getErrorResult("白噪声元素为空");
+            log.warn("未查询到白噪声元素");
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "白噪声元素为空");
         }
         return JsonResult.getSuccessResult(wnes);
     }

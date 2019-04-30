@@ -1,6 +1,7 @@
 package com.netease.focusmonk.controller;
 
 import com.netease.focusmonk.common.JsonResult;
+import com.netease.focusmonk.common.ResultCode;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
 import com.netease.focusmonk.service.WhiteNoiseSchemeDetailServiceImpl;
 import com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl;
@@ -34,18 +35,18 @@ public class WhiteNoiseSchemeController {
     /**
      * 新增一个方案，并返回新增方案的id
      * @param volumes
-     * @param elements
+     * @param elementIds
      * @return schemeId
      */
     @RequestMapping(value = "/addOneScheme", method = RequestMethod.POST)
     public JsonResult addOneScheme(@Valid WhiteNoiseScheme wns,
-                                   @RequestParam("volumes") int[] volumes,
-                                   @RequestParam("elements") int[] elements) {
-
+                                   @RequestParam("volume") int[] volumes,
+                                   @RequestParam("elementId") int[] elementIds) {
         int newSchemeId = 0;
         try {
-            newSchemeId = whiteNoiseSchemeService.addOneScheme(wns, volumes, elements);
-        } catch (InterruptedException e) {
+            newSchemeId = whiteNoiseSchemeService.addOneScheme(wns, volumes, elementIds);
+        } catch (Exception e) {
+            log.error(e.getMessage());
             return JsonResult.getErrorResult(e.getMessage());
         }
         return JsonResult.getSuccessResult(newSchemeId);
@@ -65,17 +66,22 @@ public class WhiteNoiseSchemeController {
     /**
      * 更新一个方案，逻辑是删除该方案的所有声音元素详情，然后新建所有元素详情
      * @param volumes
-     * @param elements
+     * @param elementIds
      * @return
      */
     @RequestMapping(value = "/updateOneScheme", method = RequestMethod.POST)
-    public JsonResult updateOneScheme(WhiteNoiseScheme wns,
-            @RequestParam("volumes") int[] volumes,
-            @RequestParam("elements") int[] elements) {
+    public JsonResult updateOneScheme(@Valid WhiteNoiseScheme wns,
+            @RequestParam("volume") int[] volumes,
+            @RequestParam("elementId") int[] elementIds) {
+        if (wns.getId() == null || wns.getId() <= 0) {
+            log.error("WhiteNoiseScheme.id 不能为空");
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "WhiteNoiseScheme.id 不能为空");
+        }
         try {
-            whiteNoiseSchemeService.updateOneScheme(wns, volumes, elements);
-        } catch (IllegalAccessException e) {
-            JsonResult.getErrorResult(e.getMessage());
+            whiteNoiseSchemeService.updateOneScheme(wns, volumes, elementIds);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, e.getMessage());
         }
         return JsonResult.getSuccessResult();
     }
@@ -87,7 +93,13 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/selectOneScheme", method = RequestMethod.GET)
     public JsonResult selectOneScheme(@RequestParam("schemeId") int schemeId) {
-        List<Object> schemeDetail = whiteNoiseSchemeService.getOneScheme(schemeId);
+        List<Object> schemeDetail;
+        try {
+            schemeDetail = whiteNoiseSchemeService.getOneScheme(schemeId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, e.getMessage());
+        }
         return JsonResult.getSuccessResult(schemeDetail);
     }
 
@@ -98,7 +110,14 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/selectAllScheme", method = RequestMethod.GET)
     public JsonResult selectAllScheme(@RequestParam("userId") int userId) {
-        List<List<Object>> schemeDetails = whiteNoiseSchemeService.selectAllSchemeByUserId(userId);
+        List<List<Object>> schemeDetails;
+        try {
+            schemeDetails = whiteNoiseSchemeService.selectAllSchemeByUserId(userId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, e.getMessage());
+        }
+
         return JsonResult.getSuccessResult(schemeDetails);
     }
 
