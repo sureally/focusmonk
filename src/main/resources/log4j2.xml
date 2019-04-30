@@ -6,7 +6,7 @@
         <Property name="LOG_PATTERN">
             %d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostName} -&#45;&#45; [%15.15t] %-40.40c{1.} : %m%n%ex
         </Property>
-        <Property name="LOG_FILE_PATH">/Users/hejiecheng/Downloads</Property>
+        <Property name="LOG_FILE_PATH">./log</Property>
     </Properties>
     <Appenders>
         <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
