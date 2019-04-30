@@ -50,7 +50,7 @@ public class TaskDetailServiceImpl {
 
         taskDetail.setSummaryId(summaryId);
 
-        taskDetailMapper.insert(taskDetail);
+        taskDetailMapper.insertSelective(taskDetail);
     }
     // End Write By KHF.
 }
