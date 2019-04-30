@@ -150,4 +150,15 @@
       sum_book = #{sumBook,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByPhone" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from user
+    where phone = #{phone,jdbcType=VARCHAR}
+  </select>
+  
+  <insert id="addUser" parameterType="java.lang.String" useGeneratedKeys="true" keyProperty="id">
+    insert into user(phone) values(#{phone})
+  </insert>
 </mapper>

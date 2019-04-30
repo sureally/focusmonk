@@ -9,6 +9,8 @@ public enum ResultCode {
     SUCCESS("000000", "success"),
     PARAM_ERROR("000001", "invalid parameter"),
     BUSINESS_ERROR("000002", "business error"),
+    CODE_INVALID("001001", "code invalid"),
+    CODE_ERROR("001002", "code error"),
     UNKNOWN("999999", "unknow error");
 
     private String code;
