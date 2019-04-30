@@ -32,7 +32,8 @@ public class StudyAloneController {
         }
 
         try {
-            taskDetailService.generateTaskDetail(taskDetail);
+            //taskDetailService.generateTaskDetail(taskDetail);
+            taskDetailService.generateTaskDetailWithDay(taskDetail);
         } catch (GeneralException e) {
             log.error("error info : {}","独处任务生产异常");
             return JsonResult.getErrorResult();

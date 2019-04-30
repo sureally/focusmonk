@@ -112,6 +112,12 @@
   <select id="selectTodaySummaryByUserId" parameterType="java.lang.Integer" resultType="com.netease.focusmonk.model.Summary">
     SELECT * FROM summary WHERE user_id = #{userId} AND to_days(summary_day) = to_days(now());
   </select>
+
+  <!-- 查询指定用户，指定日期的学习汇总记录 -->
+  <select id="selectSummaryByUserIdAndDay" resultType="com.netease.focusmonk.model.Summary">
+    SELECT * FROM summary WHERE TO_DAYS(summary_day) = TO_DAYS(#{startTime})
+      AND user_id = #{userId}
+  </select>
   <!-- End Write By KHF. ======================================-->
 
 </mapper>
