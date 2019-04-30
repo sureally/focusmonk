@@ -4,6 +4,7 @@ import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.ResultCode;
 import com.netease.focusmonk.model.WhiteNoiseElement;
 import com.netease.focusmonk.service.WhiteNoiseElementServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +19,7 @@ import java.util.List;
  * @DateTime 2019-04-29 16:37
  * @Version 1.0
  **/
+@Slf4j
 @RestController
 @RequestMapping("/WhiteNoiseElementController")
 public class WhiteNoiseElementController {
@@ -31,6 +33,10 @@ public class WhiteNoiseElementController {
     @RequestMapping(value = "/selectAll", method = RequestMethod.GET)
     public JsonResult allWhiteNoiseElement() {
         List<WhiteNoiseElement> wnes = whiteNoiseElementServiceImpl.listAll();
-        return new JsonResult(ResultCode.SUCCESS, wnes);
+        if (wnes == null) {
+            log.warn("未查询到白噪声元素");
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "白噪声元素为空");
+        }
+        return JsonResult.getSuccessResult(wnes);
     }
 }
