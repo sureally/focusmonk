@@ -26,6 +26,9 @@
       sum_book, summary_day)
     values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{sumTime,jdbcType=INTEGER}, 
       #{sumBook,jdbcType=INTEGER}, #{summaryDay,jdbcType=TIMESTAMP})
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.netease.focusmonk.model.Summary" >
     insert into summary
@@ -63,6 +66,9 @@
         #{summaryDay,jdbcType=TIMESTAMP},
       </if>
     </trim>
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.netease.focusmonk.model.Summary" >
     update summary
@@ -94,4 +100,18 @@
   <select id="selectByUserId" parameterType="java.lang.Integer" resultType="com.netease.focusmonk.model.Summary">
     SELECT * FROM summary WHERE user_id = #{userId} ORDER BY summary_day DESC
   </select>
+
+  <!-- Start Write By KHF. ==================================-->
+
+  <!-- 查询某一用户的所有学习任务汇总记录 -->
+  <select id="selectSummaryDayListByUserId" parameterType="java.lang.Integer" resultType="java.util.Date">
+    SELECT summary_day FROM summary WHERE user_id = #{userId};
+  </select>
+
+  <!-- 查询用户当天任务汇总记录 -->
+  <select id="selectTodaySummaryByUserId" parameterType="java.lang.Integer" resultType="com.netease.focusmonk.model.Summary">
+    SELECT * FROM summary WHERE user_id = #{userId} AND to_days(summary_day) = to_days(now());
+  </select>
+  <!-- End Write By KHF. ======================================-->
+
 </mapper>
