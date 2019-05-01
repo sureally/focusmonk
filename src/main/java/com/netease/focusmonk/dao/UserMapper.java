@@ -18,4 +18,8 @@ public interface UserMapper {
     User selectByPhone(String phone);
 
     int addUser(User user);
+
+    int updateBookNum(Integer userId, Integer bookNum);
+
+    int updateDefaultTaskAndPlanTime(Integer userId, String task, Integer planTime);
 }

@@ -1,6 +1,7 @@
 package com.netease.focusmonk.service;
 
 import com.netease.focusmonk.dao.UserMapper;
+import com.netease.focusmonk.exception.GeneralException;
 import com.netease.focusmonk.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,4 +61,13 @@ public class UserServiceImpl {
         return userMapper.selectByPrimaryKey(Integer.valueOf(userId));
     }
 
+    // Start Write By KHF.
+    public int  accumulateBookNum(Integer userId, Integer bookNum) {
+        return userMapper.updateBookNum(userId, bookNum);
+    }
+
+    public int setDefaultTaskAndPlanTime(Integer userId, String task, Integer planTime) {
+        return userMapper.updateDefaultTaskAndPlanTime(userId, task, planTime);
+    }
+    //End Write By KHF.
 }

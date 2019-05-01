@@ -161,4 +161,17 @@
   <insert id="addUser" parameterType="com.netease.focusmonk.model.User" useGeneratedKeys="true" keyProperty="id">
     insert into user(phone, username) values(#{phone}, #{username})
   </insert>
+
+  <!-- Start Write By KHF -->
+  <!-- 更新用户总经书卷数 -->
+  <update id="updateBookNum">
+    UPDATE user SET sum_book = sum_book + #{bookNum} WHERE id = #{userId}
+  </update>
+
+  <!-- 设置用户默认计划时间，默认任务吗 -->
+  <update id="updateDefaultTaskAndPlanTime">
+    UPDATE user SET default_time = #{planTime}, default_task = #{task}  WHERE id = #{userId}
+  </update>
+  <!-- End Write By KHF -->
+
 </mapper>

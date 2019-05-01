@@ -22,6 +22,9 @@ public class TaskDetailServiceImpl {
     @Resource
     private SummaryServiceImpl summaryService;
 
+    @Resource
+    private UserServiceImpl userService;
+
     public List<TaskDetail> getTaskDetail(Map<String,Integer> map) {
         List<TaskDetail> taskDetails = taskDetailMapper.selectBySummaryIdAndUserId(map);
         return taskDetails;
@@ -74,11 +77,21 @@ public class TaskDetailServiceImpl {
             summaryId = specifiedDateSummary.getId();
         }
 
+        //保存单条学习任务记录
+        taskDetail.setSummaryId(summaryId);
+        taskDetailMapper.insertSelective(taskDetail);
+
+        //累加到当天汇总表中
         summaryService.accumulateBookAndTime(summaryId, taskDetail.getBookNum(), taskDetail.getDurationTime());
 
-        taskDetail.setSummaryId(summaryId);
+        //累加到用户总经书卷数中
+        int bookNumRows = userService.accumulateBookNum(taskDetail.getUserId(), taskDetail.getBookNum());
 
-        taskDetailMapper.insertSelective(taskDetail);
+        //设置用户默认任务名和学习时长
+        int taskAndPlanTimeRows = userService.setDefaultTaskAndPlanTime(taskDetail.getUserId(), taskDetail.getTask(), taskDetail.getPlanTime());
+        if (bookNumRows == 0 || taskAndPlanTimeRows == 0) {
+            throw new GeneralException("任务记录无对应用户异常");
+        }
     }
 
     // End Write By KHF.
