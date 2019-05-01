@@ -10,6 +10,7 @@ import com.netease.focusmonk.common.SocketMsgCode;
 import com.netease.focusmonk.handler.DeviceWebSocketHandler;
 import com.netease.focusmonk.model.User;
 import com.netease.focusmonk.service.LoginServiceImpl;
+import com.netease.focusmonk.utils.JWTUtil;
 import com.netease.focusmonk.utils.RedisUtil;
 import com.netease.focusmonk.utils.SMSUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -69,19 +70,20 @@ public class SDSController {
             // 说明这个是一个新用户
             user = new User();
             user.setPhone(phone);
-            user.setId(loginService.addNewUser(phone));
+            user.setUsername("小和尚"+codeGenerate());
+            loginService.addNewUser(user);
             detail.put("type", "new");
         } else {
             detail.put("type", "old");
         }
-        // 给用户生成token
+        log.info("当前用户id:{}", user.getId());
+        // 给用户生成jwt
         Map<String, Object> sessionInfo = new HashMap<>();
         sessionInfo.put("userId", user.getId());
         String sessionJson = JSON.toJSONString(sessionInfo);
-        String sessionId = UUID.randomUUID().toString();
-        redisUtil.set(sessionId, sessionJson);
+        String jwt = JWTUtil.buildJWT(sessionJson);
         // 返回结果
-        detail.put("token", sessionId);
+        detail.put("jwt", jwt);
         return JsonResult.getSuccessResult(detail);
     }
 

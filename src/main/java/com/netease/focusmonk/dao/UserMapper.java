@@ -17,5 +17,5 @@ public interface UserMapper {
 
     User selectByPhone(String phone);
 
-    int addUser(String phone);
+    int addUser(User user);
 }

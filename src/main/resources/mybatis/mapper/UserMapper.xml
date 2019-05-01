@@ -9,8 +9,8 @@
     <result column="image" property="image" jdbcType="VARCHAR" />
     <result column="sex" property="sex" jdbcType="TINYINT" />
     <result column="last_device" property="lastDevice" jdbcType="VARCHAR" />
-    <result column="default_time" property="defaultTime" jdbcType="TIMESTAMP" />
-    <result column="default_task" property="defaultTask" jdbcType="TIMESTAMP" />
+    <result column="default_time" property="defaultTime" jdbcType="INTEGER" />
+    <result column="default_task" property="defaultTask" jdbcType="VARCHAR" />
     <result column="sum_book" property="sumBook" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -34,7 +34,7 @@
       sum_book)
     values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, 
       #{phone,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT}, 
-      #{lastDevice,jdbcType=VARCHAR}, #{defaultTime,jdbcType=TIMESTAMP}, #{defaultTask,jdbcType=TIMESTAMP}, 
+      #{lastDevice,jdbcType=VARCHAR}, #{defaultTime,jdbcType=INTEGER}, #{defaultTask,jdbcType=VARCHAR},
       #{sumBook,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.focusmonk.model.User" >
@@ -94,10 +94,10 @@
         #{lastDevice,jdbcType=VARCHAR},
       </if>
       <if test="defaultTime != null" >
-        #{defaultTime,jdbcType=TIMESTAMP},
+        #{defaultTime,jdbcType=INTEGER},
       </if>
       <if test="defaultTask != null" >
-        #{defaultTask,jdbcType=TIMESTAMP},
+        #{defaultTask,jdbcType=VARCHAR},
       </if>
       <if test="sumBook != null" >
         #{sumBook,jdbcType=INTEGER},
@@ -126,10 +126,10 @@
         last_device = #{lastDevice,jdbcType=VARCHAR},
       </if>
       <if test="defaultTime != null" >
-        default_time = #{defaultTime,jdbcType=TIMESTAMP},
+        default_time = #{defaultTime,jdbcType=INTEGER},
       </if>
       <if test="defaultTask != null" >
-        default_task = #{defaultTask,jdbcType=TIMESTAMP},
+        default_task = #{defaultTask,jdbcType=VARCHAR},
       </if>
       <if test="sumBook != null" >
         sum_book = #{sumBook,jdbcType=INTEGER},
@@ -145,8 +145,8 @@
       image = #{image,jdbcType=VARCHAR},
       sex = #{sex,jdbcType=TINYINT},
       last_device = #{lastDevice,jdbcType=VARCHAR},
-      default_time = #{defaultTime,jdbcType=TIMESTAMP},
-      default_task = #{defaultTask,jdbcType=TIMESTAMP},
+      default_time = #{defaultTime,jdbcType=INTEGER},
+      default_task = #{defaultTask,jdbcType=VARCHAR},
       sum_book = #{sumBook,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -158,7 +158,7 @@
     where phone = #{phone,jdbcType=VARCHAR}
   </select>
   
-  <insert id="addUser" parameterType="java.lang.String" useGeneratedKeys="true" keyProperty="id">
-    insert into user(phone) values(#{phone})
+  <insert id="addUser" parameterType="com.netease.focusmonk.model.User" useGeneratedKeys="true" keyProperty="id">
+    insert into user(phone, username) values(#{phone}, #{username})
   </insert>
 </mapper>

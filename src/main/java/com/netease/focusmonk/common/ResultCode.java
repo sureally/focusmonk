@@ -12,6 +12,7 @@ public enum ResultCode {
     WHITE_NOISE_ERROR("005002", "white noise error"),
     CODE_INVALID("001001", "code invalid"),
     CODE_ERROR("001002", "code error"),
+    JWT_ERROR("001003", "jwt error"),
 
     // Start Write By KHF.
 

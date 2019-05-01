@@ -153,16 +153,15 @@ public class JWTUtil {
         /**
          * 解析JWT
          *
-         * @param key       jwt 加密密钥
          * @param claimsJws jwt 内容文本
          * @return {@link Jws}
          * @throws Exception
          */
-        public static Jws<Claims> parseJWT(Key key, String claimsJws) {
+        public static Jws<Claims> parseJWT(String claimsJws) {
             // 移除 JWT 前的"Bearer "字符串
             claimsJws = StringUtils.substringAfter(claimsJws, JWT_SEPARATOR);
             // 解析 JWT 字符串
-            return Jwts.parser().setSigningKey(key).parseClaimsJws(claimsJws);
+            return Jwts.parser().setSigningKey(generateKey(JWT_ALG, JWT_RULE)).parseClaimsJws(claimsJws);
         }
 
         /**
@@ -176,28 +175,7 @@ public class JWTUtil {
             try {
                 SecretKey key = generateKey(JWT_ALG, JWT_RULE);
                 // 获取 JWT 的 payload 部分
-                flag = (parseJWT(key, claimsJws).getBody() != null);
-            } catch (Exception e) {
-                log.warn("JWT验证出错，错误原因：{}", e.getMessage());
-            }
-            return flag;
-        }
-
-        /**
-         * 校验JWT
-         *
-         * @param key       jwt 加密密钥
-         * @param claimsJws jwt 内容文本
-         * @param sub       jwt 面向的用户
-         * @return ture or false
-         */
-        public static Boolean checkJWT(Key key, String claimsJws, String sub) {
-            boolean flag = false;
-            try {
-                // 获取 JWT 的 payload 部分
-                Claims claims = parseJWT(key, claimsJws).getBody();
-                // 比对JWT中的 sub 字段
-                flag = claims.getSubject().equals(sub);
+                flag = (parseJWT(claimsJws).getBody() != null);
             } catch (Exception e) {
                 log.warn("JWT验证出错，错误原因：{}", e.getMessage());
             }
@@ -212,7 +190,15 @@ public class JWTUtil {
          * @return ture or false
          */
         public static Boolean checkJWT(String claimsJws, String sub) {
-            return checkJWT(generateKey(JWT_ALG, JWT_RULE), claimsJws, sub);
+            boolean flag = false;
+            try {
+                // 获取 JWT 的 payload 部分
+                Claims claims = parseJWT(claimsJws).getBody();
+                // 比对JWT中的 sub 字段
+                flag = claims.getSubject().equals(sub);
+            } catch (Exception e) {
+                log.warn("JWT验证出错，错误原因：{}", e.getMessage());
+            }
+            return flag;
         }
-
 }

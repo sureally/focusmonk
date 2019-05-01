@@ -22,9 +22,9 @@ public class User {
 
     private String lastDevice;
 
-    private Date defaultTime;
+    private Integer defaultTime;
 
-    private Date defaultTask;
+    private String defaultTask;
 
     private Integer sumBook;
 }

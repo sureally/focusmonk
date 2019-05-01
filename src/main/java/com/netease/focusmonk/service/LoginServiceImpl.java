@@ -38,11 +38,10 @@ public class LoginServiceImpl {
 
     /**
      * 新增一个用户
-     * @param phone
      * @return
      */
-    public int addNewUser(String phone) {
-        return userMapper.addUser(phone);
+    public int addNewUser(User user) {
+        return userMapper.addUser(user);
     }
 
 }
