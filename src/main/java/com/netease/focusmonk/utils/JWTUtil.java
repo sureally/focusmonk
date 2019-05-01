@@ -36,169 +36,169 @@ import java.util.UUID;
 public class JWTUtil {
 
 
-        /**
-         * JWT 加解密类型
-         */
-        private static final SignatureAlgorithm JWT_ALG = SignatureAlgorithm.HS256;
-        /**
-         * JWT 生成密钥使用的密码
-         */
-        private static final String JWT_RULE = "wjtree.xin";
+    /**
+     * JWT 加解密类型
+     */
+    private static final SignatureAlgorithm JWT_ALG = SignatureAlgorithm.HS256;
+    /**
+     * JWT 生成密钥使用的密码
+     */
+    private static final String JWT_RULE = "wjtree.xin";
 
-        /**
-         * JWT 添加至HTTP HEAD中的前缀
-         */
-        private static final String JWT_SEPARATOR = "Bearer ";
+    /**
+     * JWT 添加至HTTP HEAD中的前缀
+     */
+    private static final String JWT_SEPARATOR = "Bearer ";
 
-        /**
-         * 使用JWT默认方式，生成加解密密钥
-         *
-         * @param alg 加解密类型
-         * @return
-         */
-        public static SecretKey generateKey(SignatureAlgorithm alg) {
-            return MacProvider.generateKey(alg);
+    /**
+     * 使用JWT默认方式，生成加解密密钥
+     *
+     * @param alg 加解密类型
+     * @return
+     */
+    public static SecretKey generateKey(SignatureAlgorithm alg) {
+        return MacProvider.generateKey(alg);
+    }
+
+    /**
+     * 使用指定密钥生成规则，生成JWT加解密密钥
+     *
+     * @param alg  加解密类型
+     * @param rule 密钥生成规则
+     * @return
+     */
+    public static SecretKey generateKey(SignatureAlgorithm alg, String rule) {
+        // 将密钥生成键转换为字节数组
+        byte[] bytes = Base64.decodeBase64(rule);
+        // 根据指定的加密方式，生成密钥
+        return new SecretKeySpec(bytes, alg.getJcaName());
+    }
+
+    /**
+     * 构建JWT
+     *
+     * @param alg      jwt 加密算法
+     * @param key      jwt 加密密钥
+     * @param sub      jwt 面向的用户
+     * @param aud      jwt 接收方
+     * @param jti      jwt 唯一身份标识
+     * @param iss      jwt 签发者
+     * @param nbf      jwt 生效日期时间
+     * @param duration jwt 有效时间，单位：秒
+     * @return JWT字符串
+     */
+    public static String buildJWT(SignatureAlgorithm alg, Key key, String sub, String aud, String jti, String iss, Date nbf, Integer duration) {
+        // jwt的签发时间
+        DateTime iat = DateTime.now();
+        // jwt的过期时间，这个过期时间必须要大于签发时间
+        DateTime exp = null;
+        if (duration != null) {
+            exp = (nbf == null ? iat.plusSeconds(duration) : new DateTime(nbf).plusSeconds(duration));
         }
 
-        /**
-         * 使用指定密钥生成规则，生成JWT加解密密钥
-         *
-         * @param alg  加解密类型
-         * @param rule 密钥生成规则
-         * @return
-         */
-        public static SecretKey generateKey(SignatureAlgorithm alg, String rule) {
-            // 将密钥生成键转换为字节数组
-            byte[] bytes = Base64.decodeBase64(rule);
-            // 根据指定的加密方式，生成密钥
-            return new SecretKeySpec(bytes, alg.getJcaName());
+        // 获取JWT字符串
+        String compact = Jwts.builder()
+                .signWith(alg, key)
+                .setSubject(sub)
+                .setAudience(aud)
+                .setId(jti)
+                .setIssuer(iss)
+                .setNotBefore(nbf)
+                .setIssuedAt(iat.toDate())
+                .setExpiration(exp != null ? exp.toDate() : null)
+                .compact();
+
+        // 在JWT字符串前添加"Bearer "字符串，用于加入"Authorization"请求头
+        return JWT_SEPARATOR + compact;
+    }
+
+    /**
+     * 构建JWT
+     *
+     * @param sub      jwt 面向的用户
+     * @param aud      jwt 接收方
+     * @param jti      jwt 唯一身份标识
+     * @param iss      jwt 签发者
+     * @param nbf      jwt 生效日期时间
+     * @param duration jwt 有效时间，单位：秒
+     * @return JWT字符串
+     */
+    public static String buildJWT(String sub, String aud, String jti, String iss, Date nbf, Integer duration) {
+        return buildJWT(JWT_ALG, generateKey(JWT_ALG, JWT_RULE), sub, aud, jti, iss, nbf, duration);
+    }
+
+    /**
+     * 构建JWT
+     *
+     * @param sub jwt 面向的用户
+     * @param jti jwt 唯一身份标识，主要用来作为一次性token,从而回避重放攻击
+     * @return JWT字符串
+     */
+    public static String buildJWT(String sub, String jti, Integer duration) {
+        return buildJWT(sub, null, jti, null, null, duration);
+    }
+
+    /**
+     * 构建JWT
+     * <p>使用 UUID 作为 jti 唯一身份标识</p>
+     * <p>JWT有效时间 30 * 24 * 60 * 60 秒，即 10 分钟</p>
+     *
+     * @param sub jwt 面向的用户
+     * @return JWT字符串
+     */
+    public static String buildJWT(String sub) {
+        return buildJWT(sub, null, UUID.randomUUID().toString(), null, null, 259200);
+    }
+
+    /**
+     * 解析JWT
+     *
+     * @param claimsJws jwt 内容文本
+     * @return {@link Jws}
+     * @throws Exception
+     */
+    public static Jws<Claims> parseJWT(String claimsJws) {
+        // 移除 JWT 前的"Bearer "字符串
+        claimsJws = StringUtils.substringAfter(claimsJws, JWT_SEPARATOR);
+        // 解析 JWT 字符串
+        return Jwts.parser().setSigningKey(generateKey(JWT_ALG, JWT_RULE)).parseClaimsJws(claimsJws);
+    }
+
+    /**
+     * 校验JWT
+     *
+     * @param claimsJws jwt 内容文本
+     * @return ture or false
+     */
+    public static Boolean checkJWT(String claimsJws) {
+        boolean flag = false;
+        try {
+            SecretKey key = generateKey(JWT_ALG, JWT_RULE);
+            // 获取 JWT 的 payload 部分
+            flag = (parseJWT(claimsJws).getBody() != null);
+        } catch (Exception e) {
+            log.warn("JWT验证出错，错误原因：{}", e.getMessage());
         }
+        return flag;
+    }
 
-        /**
-         * 构建JWT
-         *
-         * @param alg      jwt 加密算法
-         * @param key      jwt 加密密钥
-         * @param sub      jwt 面向的用户
-         * @param aud      jwt 接收方
-         * @param jti      jwt 唯一身份标识
-         * @param iss      jwt 签发者
-         * @param nbf      jwt 生效日期时间
-         * @param duration jwt 有效时间，单位：秒
-         * @return JWT字符串
-         */
-        public static String buildJWT(SignatureAlgorithm alg, Key key, String sub, String aud, String jti, String iss, Date nbf, Integer duration) {
-            // jwt的签发时间
-            DateTime iat = DateTime.now();
-            // jwt的过期时间，这个过期时间必须要大于签发时间
-            DateTime exp = null;
-            if (duration != null) {
-                exp = (nbf == null ? iat.plusSeconds(duration) : new DateTime(nbf).plusSeconds(duration));
-            }
-
-            // 获取JWT字符串
-            String compact = Jwts.builder()
-                    .signWith(alg, key)
-                    .setSubject(sub)
-                    .setAudience(aud)
-                    .setId(jti)
-                    .setIssuer(iss)
-                    .setNotBefore(nbf)
-                    .setIssuedAt(iat.toDate())
-                    .setExpiration(exp != null ? exp.toDate() : null)
-                    .compact();
-
-            // 在JWT字符串前添加"Bearer "字符串，用于加入"Authorization"请求头
-            return JWT_SEPARATOR + compact;
+    /**
+     * 校验JWT
+     *
+     * @param claimsJws jwt 内容文本
+     * @param sub       jwt 面向的用户
+     * @return ture or false
+     */
+    public static Boolean checkJWT(String claimsJws, String sub) {
+        boolean flag = false;
+        try {
+            // 获取 JWT 的 payload 部分
+            Claims claims = parseJWT(claimsJws).getBody();
+            // 比对JWT中的 sub 字段
+            flag = claims.getSubject().equals(sub);
+        } catch (Exception e) {
+            log.warn("JWT验证出错，错误原因：{}", e.getMessage());
         }
-
-        /**
-         * 构建JWT
-         *
-         * @param sub      jwt 面向的用户
-         * @param aud      jwt 接收方
-         * @param jti      jwt 唯一身份标识
-         * @param iss      jwt 签发者
-         * @param nbf      jwt 生效日期时间
-         * @param duration jwt 有效时间，单位：秒
-         * @return JWT字符串
-         */
-        public static String buildJWT(String sub, String aud, String jti, String iss, Date nbf, Integer duration) {
-            return buildJWT(JWT_ALG, generateKey(JWT_ALG, JWT_RULE), sub, aud, jti, iss, nbf, duration);
-        }
-
-        /**
-         * 构建JWT
-         *
-         * @param sub jwt 面向的用户
-         * @param jti jwt 唯一身份标识，主要用来作为一次性token,从而回避重放攻击
-         * @return JWT字符串
-         */
-        public static String buildJWT(String sub, String jti, Integer duration) {
-            return buildJWT(sub, null, jti, null, null, duration);
-        }
-
-        /**
-         * 构建JWT
-         * <p>使用 UUID 作为 jti 唯一身份标识</p>
-         * <p>JWT有效时间 30 * 24 * 60 * 60 秒，即 10 分钟</p>
-         *
-         * @param sub jwt 面向的用户
-         * @return JWT字符串
-         */
-        public static String buildJWT(String sub) {
-            return buildJWT(sub, null, UUID.randomUUID().toString(), null, null, 600);
-        }
-
-        /**
-         * 解析JWT
-         *
-         * @param claimsJws jwt 内容文本
-         * @return {@link Jws}
-         * @throws Exception
-         */
-        public static Jws<Claims> parseJWT(String claimsJws) {
-            // 移除 JWT 前的"Bearer "字符串
-            claimsJws = StringUtils.substringAfter(claimsJws, JWT_SEPARATOR);
-            // 解析 JWT 字符串
-            return Jwts.parser().setSigningKey(generateKey(JWT_ALG, JWT_RULE)).parseClaimsJws(claimsJws);
-        }
-
-        /**
-         * 校验JWT
-         *
-         * @param claimsJws jwt 内容文本
-         * @return ture or false
-         */
-        public static Boolean checkJWT(String claimsJws) {
-            boolean flag = false;
-            try {
-                SecretKey key = generateKey(JWT_ALG, JWT_RULE);
-                // 获取 JWT 的 payload 部分
-                flag = (parseJWT(claimsJws).getBody() != null);
-            } catch (Exception e) {
-                log.warn("JWT验证出错，错误原因：{}", e.getMessage());
-            }
-            return flag;
-        }
-
-        /**
-         * 校验JWT
-         *
-         * @param claimsJws jwt 内容文本
-         * @param sub       jwt 面向的用户
-         * @return ture or false
-         */
-        public static Boolean checkJWT(String claimsJws, String sub) {
-            boolean flag = false;
-            try {
-                // 获取 JWT 的 payload 部分
-                Claims claims = parseJWT(claimsJws).getBody();
-                // 比对JWT中的 sub 字段
-                flag = claims.getSubject().equals(sub);
-            } catch (Exception e) {
-                log.warn("JWT验证出错，错误原因：{}", e.getMessage());
-            }
-            return flag;
-        }
+        return flag;
+    }
 }
