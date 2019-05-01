@@ -51,6 +51,13 @@ public class SDSController {
         this.loginService = loginService;
     }
 
+    /**
+     * 登陆接口
+     * @param phone
+     * @param code
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public JsonResult login(@RequestParam(value = "phone") String phone,
                             @RequestParam(value = "code") String code) throws Exception {
@@ -87,6 +94,12 @@ public class SDSController {
         return JsonResult.getSuccessResult(detail);
     }
 
+    /**
+     * 登出接口，暂不使用
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public JsonResult logout(HttpServletRequest request) throws Exception {
 
@@ -99,6 +112,12 @@ public class SDSController {
         return JsonResult.getSuccessResult();
     }
 
+    /**
+     * 验证码发送接口
+     * @param phone
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
     public JsonResult sendSMS(@RequestParam(value = "phone") String phone) throws Exception {
         String code = codeGenerate();
@@ -110,6 +129,21 @@ public class SDSController {
             // 发送失败
             return JsonResult.getErrorResult();
         }
+    }
+
+    /**
+     * app启动时以jwt旧换新
+     * @param jwt
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/refresh", method = RequestMethod.POST)
+    public JsonResult refreshJWT(@RequestParam(value = "jwt") String jwt) throws Exception {
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        String newJWT = JWTUtil.buildJWT(jwtJson);
+        Map<String, Object> detail = new HashMap<>();
+        detail.put("jwt", newJWT);
+        return JsonResult.getSuccessResult(detail);
     }
 
     /**
