@@ -36,7 +36,7 @@ public class WhiteNoiseSchemeServiceImpl {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public int addOneScheme(WhiteNoiseScheme wns, int[] volumes, int[] elementIds) throws InterruptedException {
+    public int addOneScheme(WhiteNoiseScheme wns, int[] volumes, int[] elementIds) throws Exception {
         whiteNoiseSchemeMapper.insert(wns);
         int newSchemeId = wns.getId();
         insertSchemeDetails(newSchemeId, volumes, elementIds);
@@ -62,7 +62,7 @@ public class WhiteNoiseSchemeServiceImpl {
      * @param elementIds
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateOneScheme(WhiteNoiseScheme wns, int[] volumes, int[] elementIds) throws Exception{
+    public void updateOneScheme(WhiteNoiseScheme wns, int[] volumes, int[] elementIds) throws Exception {
         whiteNoiseSchemeMapper.updateByPrimaryKeySelective(wns);
         if (wns.getId() == null || wns.getId() <= 0) {
             throw new RuntimeException("更新白噪声方案，其schemeId不能为空或为非正整数");

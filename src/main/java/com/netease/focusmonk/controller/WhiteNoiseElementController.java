@@ -31,7 +31,7 @@ public class WhiteNoiseElementController {
      * @return
      */
     @RequestMapping(value = "/selectAll", method = RequestMethod.GET)
-    public JsonResult allWhiteNoiseElement() {
+    public JsonResult allWhiteNoiseElement() throws Exception{
         List<WhiteNoiseElement> wnes = whiteNoiseElementServiceImpl.listAll();
         if (wnes == null) {
             log.warn("未查询到白噪声元素");

@@ -1,10 +1,12 @@
 package com.netease.focusmonk.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.ResultCode;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
 import com.netease.focusmonk.service.WhiteNoiseSchemeDetailServiceImpl;
 import com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl;
+import com.netease.focusmonk.utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +43,7 @@ public class WhiteNoiseSchemeController {
     @RequestMapping(value = "/addOneScheme", method = RequestMethod.POST)
     public JsonResult addOneScheme(@Valid WhiteNoiseScheme wns,
                                    @RequestParam("volume") int[] volumes,
-                                   @RequestParam("elementId") int[] elementIds) {
+                                   @RequestParam("elementId") int[] elementIds) throws Exception {
         int newSchemeId = 0;
         try {
             newSchemeId = whiteNoiseSchemeService.addOneScheme(wns, volumes, elementIds);
@@ -58,7 +60,7 @@ public class WhiteNoiseSchemeController {
      * @return
      */
     @RequestMapping(value = "/deleteOneScheme", method = RequestMethod.DELETE)
-    public JsonResult deleteOneScheme(@RequestParam("schemeId") int schemeId) {
+    public JsonResult deleteOneScheme(@RequestParam("schemeId") int schemeId) throws Exception {
         whiteNoiseSchemeService.deleteOneScheme(schemeId);
         return JsonResult.getSuccessResult();
     }
@@ -72,7 +74,7 @@ public class WhiteNoiseSchemeController {
     @RequestMapping(value = "/updateOneScheme", method = RequestMethod.POST)
     public JsonResult updateOneScheme(@Valid WhiteNoiseScheme wns,
             @RequestParam("volume") int[] volumes,
-            @RequestParam("elementId") int[] elementIds) {
+            @RequestParam("elementId") int[] elementIds) throws Exception {
         if (wns.getId() == null || wns.getId() <= 0) {
             log.error("WhiteNoiseScheme.id 不能为空");
             return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "WhiteNoiseScheme.id 不能为空");
@@ -92,7 +94,7 @@ public class WhiteNoiseSchemeController {
      * @return
      */
     @RequestMapping(value = "/selectOneScheme", method = RequestMethod.GET)
-    public JsonResult selectOneScheme(@RequestParam("schemeId") int schemeId) {
+    public JsonResult selectOneScheme(@RequestParam("schemeId") int schemeId) throws Exception {
         List<Object> schemeDetail;
         try {
             schemeDetail = whiteNoiseSchemeService.getOneScheme(schemeId);
@@ -105,14 +107,21 @@ public class WhiteNoiseSchemeController {
 
     /**
      * 根据用户Id获取该用户所有白噪声方案及其信息详情。
-     * @param userId
+     * @param jwt
      * @return
      */
     @RequestMapping(value = "/selectAllScheme", method = RequestMethod.GET)
-    public JsonResult selectAllScheme(@RequestParam("userId") int userId) {
+    public JsonResult selectAllScheme(@RequestParam("jwt") String jwt) throws Exception {
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        String userId = sessionInfo.getString("userId");
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+
         List<List<Object>> schemeDetails;
         try {
-            schemeDetails = whiteNoiseSchemeService.selectAllSchemeByUserId(userId);
+            schemeDetails = whiteNoiseSchemeService.selectAllSchemeByUserId(Integer.valueOf(userId));
         } catch (Exception e) {
             log.error(e.getMessage());
             return new JsonResult(ResultCode.WHITE_NOISE_ERROR, e.getMessage());
