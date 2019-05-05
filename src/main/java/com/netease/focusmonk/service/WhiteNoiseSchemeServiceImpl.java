@@ -1,7 +1,6 @@
 package com.netease.focusmonk.service;
 
 import com.netease.focusmonk.dao.WhiteNoiseSchemeMapper;
-import com.netease.focusmonk.exception.GeneralException;
 import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
 import com.netease.focusmonk.model.WhiteNoiseSchemeDetail;
@@ -69,7 +68,7 @@ public class WhiteNoiseSchemeServiceImpl {
                                 int[] elementIds) throws Exception {
         whiteNoiseSchemeMapper.updateByPrimaryKeySelective(wns);
         if (wns.getId() == null || wns.getId() <= 0) {
-            throw new GeneralException("更新白噪声方案，其schemeId不能为空或为非正整数");
+            throw new ParamException("更新白噪声方案，其schemeId不能为空或为非正整数");
         }
         // 删除该白噪声方案的所有声音详情
         whiteNoiseSchemeDetailService.deleteBySchemeId(wns.getId());
@@ -131,7 +130,7 @@ public class WhiteNoiseSchemeServiceImpl {
         List<Object> schemeDetail = new ArrayList<>();
         WhiteNoiseScheme wns = whiteNoiseSchemeMapper.selectByPrimaryKey(schemeId);
         if (wns == null) {
-            throw new GeneralException("schemeId有误，不存在该白噪声方案");
+            throw new ParamException("schemeId有误，不存在该白噪声方案");
         }
         schemeDetail.add(wns);
         List<WhiteNoiseSchemeDetail> wnsds = whiteNoiseSchemeDetailService.selectBySchemeId(schemeId);

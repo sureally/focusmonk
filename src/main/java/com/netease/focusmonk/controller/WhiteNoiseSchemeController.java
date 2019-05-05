@@ -3,7 +3,6 @@ package com.netease.focusmonk.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.ResultCode;
-import com.netease.focusmonk.exception.GeneralException;
 import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
 import com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl;
@@ -70,6 +69,7 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/deleteOneScheme", method = RequestMethod.DELETE)
     public JsonResult deleteOneScheme(@RequestParam("schemeId") int schemeId) throws Exception {
+        // TODO: 未做参数验证，即使数据库中不存在schemeId的方案时，也返回成功，相当于没有动作。
         whiteNoiseSchemeService.deleteOneScheme(schemeId);
         return JsonResult.getSuccessResult();
     }
@@ -100,20 +100,17 @@ public class WhiteNoiseSchemeController {
         // 验证wns是否存在
         WhiteNoiseScheme tmpWns = whiteNoiseSchemeService.selectBySchemeId(wns.getId());
         if (tmpWns == null) {
-            log.error("error info: {}", "待更新的白噪声方案不存在", wns.toString());
+            log.error("error info: 待更新的白噪声方案{}不存在", wns.toString());
             return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, "待更新的白噪声方案不存在");
         }
         // 验证wns的id与userId是否匹配
         if (!Objects.equals(tmpWns.getUserId(), Integer.valueOf(userId))) {
-            log.error("error info: {}", "待更新的白噪声方案userId与schemeId不匹配", wns.toString());
+            log.error("error info: 待更新的白噪声方案{}其userId与schemeId不匹配", wns.toString());
             return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, "待更新的白噪声方案userId与schemeId不匹配");
         }
 
         try {
             whiteNoiseSchemeService.updateOneScheme(wns, volumes, elementIds);
-        } catch (GeneralException ge) {
-            log.error("白噪声方案通用异常: {}", ge);
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, ge.getMessage());
         } catch (ParamException pe) {
             log.error("白噪声方案参数异常: {}", pe);
             return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, pe.getMessage());
@@ -131,9 +128,9 @@ public class WhiteNoiseSchemeController {
         List<Object> schemeDetail;
         try {
             schemeDetail = whiteNoiseSchemeService.getOneScheme(schemeId);
-        } catch (GeneralException ge) {
-            log.error("白噪声方案通用异常: {}", ge);
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, ge.getMessage());
+        } catch (ParamException pe) {
+            log.error("白噪声方案参数异常: {}", pe);
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, pe.getMessage());
         }
         return JsonResult.getSuccessResult(schemeDetail);
     }
@@ -155,9 +152,9 @@ public class WhiteNoiseSchemeController {
         List<List<Object>> schemeDetails;
         try {
             schemeDetails = whiteNoiseSchemeService.selectAllSchemeByUserId(Integer.valueOf(userId));
-        } catch (GeneralException ge) {
-            log.error("白噪声方案通用异常: {}", ge);
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, ge.getMessage());
+        } catch (ParamException pe) {
+            log.error("白噪声方案参数异常: {}", pe);
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, pe.getMessage());
         }
 
         return JsonResult.getSuccessResult(schemeDetails);
