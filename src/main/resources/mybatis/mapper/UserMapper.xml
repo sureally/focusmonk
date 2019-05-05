@@ -180,8 +180,8 @@
   </update>
 
   <!-- 更新用户总学习时长 -->
-  <update id="updateSumTime">
-    UPDATE user SET sum_time = sum_time + #{studyTime} WHERE id = #{userId}
+  <update id="updateStudyTime">
+    UPDATE user SET sum_time = sum_time + #{durationTime} WHERE id = #{userId}
   </update>
 
   <!-- 设置用户默认计划时间，默认任务吗 -->
