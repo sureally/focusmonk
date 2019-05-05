@@ -3,6 +3,12 @@ package com.netease.focusmonk.common;
 /**
  * @author hejiecheng
  * @Date 2019-04-28
+ *
+ * 通用：000XXX
+ * 登录：001XXX
+ * 独处学习：002XXX
+ * 个人中心：003XXX
+ * 多人共同学习：004XXX
  */
 public enum ResultCode {
 
@@ -11,6 +17,8 @@ public enum ResultCode {
     BUSINESS_ERROR("000002", "business error"),
     //统一异常
     GENERAL_ERROR("000003", "General error"),
+    //前端请求参数异常
+    REQUEST_PARAMETER_EXCEPTION("000004", "Http request parameter error"),
     JWT_ERROR("001003", "jwt error"),
     PERSON_CENTER_ERROR("003002","person center error"),
     CODE_INVALID("001001", "code invalid"),

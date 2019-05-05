@@ -4,6 +4,7 @@ import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -46,14 +47,22 @@ public class GeneralExceptionHandler {
         return JsonResult.getCustomResult(ResultCode.GENERAL_ERROR);
     }
 
-
     @ResponseBody
     @ExceptionHandler(BindException.class)
     public JsonResult bindExceptionHandler(BindException be) {
 
         log.error("捕获到参数绑定异常 BindException", be);
 
-        return JsonResult.getCustomResult(ResultCode.TASK_DETAIL_PARAM_ERROR);
+        return JsonResult.getCustomResult(ResultCode.REQUEST_PARAMETER_EXCEPTION);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public JsonResult requestParameterExceptionHandler(MissingServletRequestParameterException msrpe) {
+
+        log.error("捕获到请求参数异常 MissingServletRequestParameterException", msrpe);
+
+        return JsonResult.getCustomResult(ResultCode.REQUEST_PARAMETER_EXCEPTION);
     }
 
 
