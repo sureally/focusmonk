@@ -27,4 +27,6 @@ public class User {
     private String defaultTask;
 
     private Integer sumBook;
+
+    private Integer sumTime;
 }
