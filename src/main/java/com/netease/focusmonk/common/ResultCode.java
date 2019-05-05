@@ -9,9 +9,9 @@ public enum ResultCode {
     SUCCESS("000000", "success"),
     PARAM_ERROR("000001", "invalid parameter"),
     BUSINESS_ERROR("000002", "business error"),
-    GENERAL_ERROR("000003", "General error"),
     //统一异常
     JWT_ERROR("001003", "jwt error"),
+    GENERAL_ERROR("000003", "General error"),
     PERSON_CENTER_ERROR("003002","person center error"),
     WHITE_NOISE_ERROR("005002", "white noise error"),
     CODE_INVALID("001001", "code invalid"),
