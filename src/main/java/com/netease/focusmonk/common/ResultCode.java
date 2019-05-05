@@ -13,9 +13,9 @@ public enum ResultCode {
     GENERAL_ERROR("000003", "General error"),
     JWT_ERROR("001003", "jwt error"),
     PERSON_CENTER_ERROR("003002","person center error"),
-    WHITE_NOISE_ERROR("005002", "white noise error"),
     CODE_INVALID("001001", "code invalid"),
     CODE_ERROR("001002", "code error"),
+
 
 
     // Start Write By KHF.
@@ -27,6 +27,9 @@ public enum ResultCode {
     TASK_DETAIL_DATA_ERROR("002002", "学习任务记录数据完整性有误"),
 
     // End Write By KHF.
+
+    WHITE_NOISE_PARAM_ERROR("005001", "白噪声方案请求参数错误"),
+    WHITE_NOISE_ERROR("005002", "白噪声方案错误"),
 
     UNKNOWN("999999", "unknow error");
 

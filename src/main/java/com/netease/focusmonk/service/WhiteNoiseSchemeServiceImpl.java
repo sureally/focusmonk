@@ -90,6 +90,16 @@ public class WhiteNoiseSchemeServiceImpl {
     }
 
     /**
+     * 通过白噪声方案Id获取该方案的简单信息
+     * @param schemeId
+     * @return
+     * @throws Exception
+     */
+    public WhiteNoiseScheme selectBySchemeId(int schemeId) throws Exception {
+        return whiteNoiseSchemeMapper.selectByPrimaryKey(schemeId);
+    }
+
+    /**
      * 根据用户Id获取该用户所有白噪声方案及其信息详情。
      * @param userId
      * @return

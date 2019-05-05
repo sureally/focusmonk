@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @ClassName com.netease.focusmonk.controller.WhiteNoiseSchemeController
@@ -57,7 +58,7 @@ public class WhiteNoiseSchemeController {
             newSchemeId = whiteNoiseSchemeService.addOneScheme(wns, volumes, elementIds);
         } catch (ParamException pe) {
             log.error("白噪声方案参数异常: {}", pe);
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, pe.getMessage());
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, pe.getMessage());
         }
         return JsonResult.getSuccessResult(newSchemeId);
     }
@@ -94,8 +95,20 @@ public class WhiteNoiseSchemeController {
 
         if (wns.getId() == null || wns.getId() <= 0) {
             log.error("error info: WhiteNoiseScheme.id 为空");
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "WhiteNoiseScheme.id 不能为空");
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, "WhiteNoiseScheme.id 不能为空");
         }
+        // 验证wns是否存在
+        WhiteNoiseScheme tmpWns = whiteNoiseSchemeService.selectBySchemeId(wns.getId());
+        if (tmpWns == null) {
+            log.error("error info: {}", "待更新的白噪声方案不存在", wns.toString());
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, "待更新的白噪声方案不存在");
+        }
+        // 验证wns的id与userId是否匹配
+        if (!Objects.equals(tmpWns.getUserId(), Integer.valueOf(userId))) {
+            log.error("error info: {}", "待更新的白噪声方案userId与schemeId不匹配", wns.toString());
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, "待更新的白噪声方案userId与schemeId不匹配");
+        }
+
         try {
             whiteNoiseSchemeService.updateOneScheme(wns, volumes, elementIds);
         } catch (GeneralException ge) {
@@ -103,7 +116,7 @@ public class WhiteNoiseSchemeController {
             return new JsonResult(ResultCode.WHITE_NOISE_ERROR, ge.getMessage());
         } catch (ParamException pe) {
             log.error("白噪声方案参数异常: {}", pe);
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, pe.getMessage());
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, pe.getMessage());
         }
         return JsonResult.getSuccessResult();
     }
