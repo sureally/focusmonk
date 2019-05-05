@@ -34,7 +34,7 @@ public class WhiteNoiseElementController {
     public JsonResult allWhiteNoiseElement() throws Exception{
         List<WhiteNoiseElement> wnes = whiteNoiseElementServiceImpl.listAll();
         if (wnes == null) {
-            log.warn("未查询到白噪声元素");
+            log.error("error info: 未查询到白噪声元素");
             return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "白噪声元素为空");
         }
         return JsonResult.getSuccessResult(wnes);

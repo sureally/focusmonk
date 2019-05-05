@@ -1,6 +1,8 @@
 package com.netease.focusmonk.service;
 
 import com.netease.focusmonk.dao.WhiteNoiseSchemeMapper;
+import com.netease.focusmonk.exception.GeneralException;
+import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
 import com.netease.focusmonk.model.WhiteNoiseSchemeDetail;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +54,7 @@ public class WhiteNoiseSchemeServiceImpl {
     public void deleteOneScheme(int schemeId) {
         whiteNoiseSchemeDetailService.deleteBySchemeId(schemeId);
         whiteNoiseSchemeMapper.deleteByPrimaryKey(schemeId);
-        log.info("删除了一个方案, schemeId=" + schemeId);
+        log.info("删除白噪声方案: {}", "schemeId=" + schemeId);
     }
 
     /**
@@ -65,11 +67,11 @@ public class WhiteNoiseSchemeServiceImpl {
     public void updateOneScheme(WhiteNoiseScheme wns, int[] volumes, int[] elementIds) throws Exception {
         whiteNoiseSchemeMapper.updateByPrimaryKeySelective(wns);
         if (wns.getId() == null || wns.getId() <= 0) {
-            throw new RuntimeException("更新白噪声方案，其schemeId不能为空或为非正整数");
+            throw new GeneralException("更新白噪声方案，其schemeId不能为空或为非正整数");
         }
         insertSchemeDetails(wns.getId(), volumes, elementIds);
         whiteNoiseSchemeDetailService.deleteBySchemeId(wns.getId());
-        log.info("更新了一个白噪声方案, " + wns.toString());
+        log.info("更新白噪音方案: {}", wns.toString());
     }
 
 
@@ -88,10 +90,11 @@ public class WhiteNoiseSchemeServiceImpl {
      * @param userId
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public List<List<Object>> selectAllSchemeByUserId(int userId) throws Exception {
         List<WhiteNoiseScheme> schemes = whiteNoiseSchemeMapper.selectByUserId(userId);
         if (schemes == null) {
-            log.warn("userId=" + userId + " 没有任何白噪声方案");
+            log.warn("warn info: userId=" + userId + " 没有任何白噪声方案");
             return null;
         }
         List<List<Object>> schemeDetails = new ArrayList<>();
@@ -114,15 +117,14 @@ public class WhiteNoiseSchemeServiceImpl {
         List<Object> schemeDetail = new ArrayList<>();
         WhiteNoiseScheme wns = whiteNoiseSchemeMapper.selectByPrimaryKey(schemeId);
         if (wns == null) {
-            log.error("schemeId有误，不存在该白噪声方案");
-            throw new RuntimeException("\"schemeId有误，不存在该白噪声方案\"");
+            throw new GeneralException("schemeId有误，不存在该白噪声方案");
         }
         schemeDetail.add(wns);
         List<WhiteNoiseSchemeDetail> wnsds = whiteNoiseSchemeDetailService.selectBySchemeId(schemeId);
         if (wnsds != null) {
             schemeDetail.addAll(wnsds);
         } else {
-            log.warn("schemeId=" + schemeId + " 方案中没有任何声音元素");
+            log.warn("warn info: schemeId=" + schemeId + " 方案中没有任何声音元素");
         }
         return schemeDetail;
     }
@@ -135,8 +137,7 @@ public class WhiteNoiseSchemeServiceImpl {
      */
     private void insertSchemeDetails(int schemeId, int[] volumes, int[] elementIds) {
         if (!Objects.equals(volumes.length, elementIds.length)) {
-            log.error("白噪声新增方案元素详情输入错误, 声音volumes与elements长度不匹配");
-            throw new IllegalArgumentException("声音volumes与elements长度不匹配");
+            throw new ParamException("声音volumes与elements长度不匹配");
         }
 
         for (int i = 0; i < elementIds.length; i++) {
@@ -145,7 +146,7 @@ public class WhiteNoiseSchemeServiceImpl {
             wnds.setVolume(volumes[i]);
             wnds.setSchemeId(schemeId);
             whiteNoiseSchemeDetailService.add(wnds);
-            log.info("新增一个白噪声元素详情, " + wnds.toString());
+            log.info("新增白噪声方案: {}", wnds.toString());
         }
     }
 

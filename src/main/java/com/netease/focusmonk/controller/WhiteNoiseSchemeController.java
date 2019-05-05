@@ -3,6 +3,8 @@ package com.netease.focusmonk.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.ResultCode;
+import com.netease.focusmonk.exception.GeneralException;
+import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
 import com.netease.focusmonk.service.WhiteNoiseSchemeDetailServiceImpl;
 import com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl;
@@ -18,8 +20,8 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * @ClassName com.netease.focusmonk.controller.WhiteNoiseSchemeControlle
- * @Desciption
+ * @ClassName com.netease.focusmonk.controller.WhiteNoiseSchemeController
+ * @Desciption 白噪声方案
  * @Author Shu WJ
  * @DateTime 2019-04-29 21:25
  * @Version 1.0
@@ -47,9 +49,9 @@ public class WhiteNoiseSchemeController {
         int newSchemeId = 0;
         try {
             newSchemeId = whiteNoiseSchemeService.addOneScheme(wns, volumes, elementIds);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return JsonResult.getErrorResult(e.getMessage());
+        } catch (ParamException pe) {
+            log.error("白噪声方案参数异常: {}", pe);
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, pe.getMessage());
         }
         return JsonResult.getSuccessResult(newSchemeId);
     }
@@ -76,14 +78,17 @@ public class WhiteNoiseSchemeController {
             @RequestParam("volume") int[] volumes,
             @RequestParam("elementId") int[] elementIds) throws Exception {
         if (wns.getId() == null || wns.getId() <= 0) {
-            log.error("WhiteNoiseScheme.id 不能为空");
+            log.error("error info: WhiteNoiseScheme.id 为空");
             return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "WhiteNoiseScheme.id 不能为空");
         }
         try {
             whiteNoiseSchemeService.updateOneScheme(wns, volumes, elementIds);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, e.getMessage());
+        } catch (GeneralException ge) {
+            log.error("白噪声方案通用异常: {}", ge);
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, ge.getMessage());
+        } catch (ParamException pe) {
+            log.error("白噪声方案参数异常: {}", pe);
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, pe.getMessage());
         }
         return JsonResult.getSuccessResult();
     }
@@ -98,9 +103,9 @@ public class WhiteNoiseSchemeController {
         List<Object> schemeDetail;
         try {
             schemeDetail = whiteNoiseSchemeService.getOneScheme(schemeId);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, e.getMessage());
+        } catch (GeneralException ge) {
+            log.error("白噪声方案通用异常: {}", ge);
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, ge.getMessage());
         }
         return JsonResult.getSuccessResult(schemeDetail);
     }
@@ -122,9 +127,9 @@ public class WhiteNoiseSchemeController {
         List<List<Object>> schemeDetails;
         try {
             schemeDetails = whiteNoiseSchemeService.selectAllSchemeByUserId(Integer.valueOf(userId));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, e.getMessage());
+        } catch (GeneralException ge) {
+            log.error("白噪声方案通用异常: {}", ge);
+            return new JsonResult(ResultCode.WHITE_NOISE_ERROR, ge.getMessage());
         }
 
         return JsonResult.getSuccessResult(schemeDetails);
