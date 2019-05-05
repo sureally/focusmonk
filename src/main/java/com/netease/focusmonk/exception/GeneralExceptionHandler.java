@@ -43,7 +43,7 @@ public class GeneralExceptionHandler {
 
         log.error("捕获到通用异常GeneralException", ge);
 
-        return JsonResult.getCustomResult(ResultCode.TASK_DETAIL_DATA_ERROR);
+        return JsonResult.getCustomResult(ResultCode.GENERAL_ERROR);
     }
 
 
