@@ -9,10 +9,14 @@ public enum ResultCode {
     SUCCESS("000000", "success"),
     PARAM_ERROR("000001", "invalid parameter"),
     BUSINESS_ERROR("000002", "business error"),
+    //统一异常
+    GENERAL_ERROR("000003", "General error"),
+    JWT_ERROR("001003", "jwt error"),
+    PERSON_CENTER_ERROR("003002","person center error"),
     WHITE_NOISE_ERROR("005002", "white noise error"),
     CODE_INVALID("001001", "code invalid"),
     CODE_ERROR("001002", "code error"),
-    JWT_ERROR("001003", "jwt error"),
+
 
     // Start Write By KHF.
 

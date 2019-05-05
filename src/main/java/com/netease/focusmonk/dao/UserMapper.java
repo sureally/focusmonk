@@ -22,4 +22,6 @@ public interface UserMapper {
     int updateBookNum(Integer userId, Integer bookNum);
 
     int updateDefaultTaskAndPlanTime(Integer userId, String task, Integer planTime);
+
+    int updateStudyTime(Integer userId, Integer durationTime);
 }

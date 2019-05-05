@@ -86,10 +86,11 @@ public class TaskDetailServiceImpl {
 
         //累加到用户总经书卷数中
         int bookNumRows = userService.accumulateBookNum(taskDetail.getUserId(), taskDetail.getBookNum());
+        int studyTimeRows = userService.accumulateStudyTime(taskDetail.getUserId(), taskDetail.getDurationTime());
 
         //设置用户默认任务名和学习时长
         int taskAndPlanTimeRows = userService.setDefaultTaskAndPlanTime(taskDetail.getUserId(), taskDetail.getTask(), taskDetail.getPlanTime());
-        if (bookNumRows == 0 || taskAndPlanTimeRows == 0) {
+        if (bookNumRows == 0 || taskAndPlanTimeRows == 0 ||studyTimeRows == 0) {
             throw new GeneralException("任务记录无对应用户异常");
         }
     }

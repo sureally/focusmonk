@@ -62,12 +62,20 @@ public class UserServiceImpl {
     }
 
     // Start Write By KHF.
+
+    // 累计用户学习经书卷数
     public int  accumulateBookNum(Integer userId, Integer bookNum) {
         return userMapper.updateBookNum(userId, bookNum);
     }
 
+    // 设置用户默认学习任务和时长
     public int setDefaultTaskAndPlanTime(Integer userId, String task, Integer planTime) {
         return userMapper.updateDefaultTaskAndPlanTime(userId, task, planTime);
+    }
+
+    // 累加用户学习总时长
+    public int accumulateStudyTime(Integer userId, Integer durationTime) {
+        return userMapper.updateStudyTime(userId, durationTime);
     }
     //End Write By KHF.
 }
