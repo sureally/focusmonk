@@ -2,6 +2,7 @@ package com.netease.focusmonk.service;
 
 import com.netease.focusmonk.dao.WhiteNoiseSchemeDetailMapper;
 import com.netease.focusmonk.model.WhiteNoiseSchemeDetail;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @DateTime 2019-04-29 20:57
  * @Version 1.0
  **/
+@Slf4j
 @Service
 public class WhiteNoiseSchemeDetailServiceImpl {
 
@@ -38,6 +40,7 @@ public class WhiteNoiseSchemeDetailServiceImpl {
      */
     public void deleteBySchemeId(Integer schemeId) {
         whiteNoiseSchemeDetailMapper.deleteBySchemeId(schemeId);
+        log.info("删除白噪声方案详情配置: {}", "schemeId=" + schemeId);
     }
 
 

@@ -42,7 +42,7 @@ public class WhiteNoiseSchemeServiceImpl {
         whiteNoiseSchemeMapper.insert(wns);
         int newSchemeId = wns.getId();
         insertSchemeDetails(newSchemeId, volumes, elementIds);
-        log.info("新增了一个方案," + wns.toString());
+        log.info("新增白噪声方案: {}" + wns.toString());
         return newSchemeId;
     }
 
@@ -64,13 +64,17 @@ public class WhiteNoiseSchemeServiceImpl {
      * @param elementIds
      */
     @Transactional(rollbackFor = Exception.class)
-    public void updateOneScheme(WhiteNoiseScheme wns, int[] volumes, int[] elementIds) throws Exception {
+    public void updateOneScheme(WhiteNoiseScheme wns,
+                                int[] volumes,
+                                int[] elementIds) throws Exception {
         whiteNoiseSchemeMapper.updateByPrimaryKeySelective(wns);
         if (wns.getId() == null || wns.getId() <= 0) {
             throw new GeneralException("更新白噪声方案，其schemeId不能为空或为非正整数");
         }
-        insertSchemeDetails(wns.getId(), volumes, elementIds);
+        // 删除该白噪声方案的所有声音详情
         whiteNoiseSchemeDetailService.deleteBySchemeId(wns.getId());
+        // 插入该白噪声方案的需要更新的所有声音详情
+        insertSchemeDetails(wns.getId(), volumes, elementIds);
         log.info("更新白噪音方案: {}", wns.toString());
     }
 
@@ -124,7 +128,7 @@ public class WhiteNoiseSchemeServiceImpl {
         if (wnsds != null) {
             schemeDetail.addAll(wnsds);
         } else {
-            log.warn("warn info: schemeId=" + schemeId + " 方案中没有任何声音元素");
+            log.warn("warn info: schemeId=" + schemeId + " 方案中没有任何声音元素详情配置");
         }
         return schemeDetail;
     }
@@ -146,7 +150,7 @@ public class WhiteNoiseSchemeServiceImpl {
             wnds.setVolume(volumes[i]);
             wnds.setSchemeId(schemeId);
             whiteNoiseSchemeDetailService.add(wnds);
-            log.info("新增白噪声方案: {}", wnds.toString());
+            log.info("新增白噪声方案的详情配置: {}", wnds.toString());
         }
     }
 

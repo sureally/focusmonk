@@ -6,7 +6,6 @@ import com.netease.focusmonk.common.ResultCode;
 import com.netease.focusmonk.exception.GeneralException;
 import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
-import com.netease.focusmonk.service.WhiteNoiseSchemeDetailServiceImpl;
 import com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl;
 import com.netease.focusmonk.utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +29,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/WhiteNoiseSchemeController")
 public class WhiteNoiseSchemeController {
-    @Autowired
-    private WhiteNoiseSchemeDetailServiceImpl whiteNoiseSchemeDetailService;
 
     @Autowired
     private WhiteNoiseSchemeServiceImpl whiteNoiseSchemeService;
@@ -44,8 +41,17 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/addOneScheme", method = RequestMethod.POST)
     public JsonResult addOneScheme(@Valid WhiteNoiseScheme wns,
+                                   @RequestParam("jwt") String jwt,
                                    @RequestParam("volume") int[] volumes,
                                    @RequestParam("elementId") int[] elementIds) throws Exception {
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        String userId = sessionInfo.getString("userId");
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+        wns.setUserId(Integer.valueOf(userId));
+
         int newSchemeId = 0;
         try {
             newSchemeId = whiteNoiseSchemeService.addOneScheme(wns, volumes, elementIds);
@@ -75,8 +81,17 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/updateOneScheme", method = RequestMethod.POST)
     public JsonResult updateOneScheme(@Valid WhiteNoiseScheme wns,
-            @RequestParam("volume") int[] volumes,
-            @RequestParam("elementId") int[] elementIds) throws Exception {
+                                      @RequestParam("jwt") String jwt,
+                                      @RequestParam("volume") int[] volumes,
+                                      @RequestParam("elementId") int[] elementIds) throws Exception {
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        String userId = sessionInfo.getString("userId");
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+        wns.setUserId(Integer.valueOf(userId));
+
         if (wns.getId() == null || wns.getId() <= 0) {
             log.error("error info: WhiteNoiseScheme.id 为空");
             return new JsonResult(ResultCode.WHITE_NOISE_ERROR, "WhiteNoiseScheme.id 不能为空");

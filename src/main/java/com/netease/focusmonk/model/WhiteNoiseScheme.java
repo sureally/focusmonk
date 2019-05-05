@@ -12,7 +12,6 @@ import javax.validation.constraints.*;
 public class WhiteNoiseScheme {
     private Integer id;
 
-    @NotNull(message = "用户ID不能为空")
     @Min(1)
     private Integer userId;
 
