@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Slf4j
 @Controller
@@ -35,6 +36,21 @@ public class StudyAloneController {
 
         if (!StringUtils.isNotBlank(userId)) {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+
+        Date startTime = taskDetail.getStartTime();
+        Date endTime = taskDetail.getEndTime();
+        if (endTime.before(startTime)) {
+            log.error("error info : {}", "起始学习时间大于结束学习时间");
+            return JsonResult.getCustomResult(ResultCode.PARAM_ERROR);
+        }
+
+        // 持续学习时长（单位：分钟）
+        int durationTimeM = taskDetail.getDurationTime() / 60;
+        int bookNum = taskDetail.getBookNum();
+        if (Math.abs(Math.floor(durationTimeM / 20) - bookNum) > 1) {
+            log.error("error info : {}","学习时长与所获经书数目不匹配");
+            return JsonResult.getCustomResult(ResultCode.PARAM_ERROR);
         }
 
         try {
