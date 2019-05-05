@@ -16,7 +16,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, username, open_id, phone, image, sex, last_device, default_time, default_task, 
-    sum_book
+    sum_book, sum_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -32,7 +32,7 @@
     insert into user (id, username, open_id, 
       phone, image, sex, 
       last_device, default_time, default_task, 
-      sum_book)
+      sum_book, sum_time)
     values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR}, 
       #{phone,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT}, 
       #{lastDevice,jdbcType=VARCHAR}, #{defaultTime,jdbcType=INTEGER}, #{defaultTask,jdbcType=VARCHAR},
