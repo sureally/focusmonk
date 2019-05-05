@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @ClassName com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl
@@ -84,7 +82,7 @@ public class WhiteNoiseSchemeServiceImpl {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public List<Object> getOneScheme(int schemeId) throws Exception {
+    public Map<String, Object> getOneScheme(int schemeId) throws Exception {
         return getOneSchemeDetail(schemeId);
     }
 
@@ -104,17 +102,17 @@ public class WhiteNoiseSchemeServiceImpl {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public List<List<Object>> selectAllSchemeByUserId(int userId) throws Exception {
+    public List<Map<String, Object>> selectAllSchemeByUserId(int userId) throws Exception {
         List<WhiteNoiseScheme> schemes = whiteNoiseSchemeMapper.selectByUserId(userId);
         if (schemes == null) {
             log.warn("warn info: userId=" + userId + " 没有任何白噪声方案");
             return null;
         }
-        List<List<Object>> schemeDetails = new ArrayList<>();
+        List<Map<String, Object>> schemeDetails = new ArrayList<>();
         // TODO: scheme 不可能为null吧
         for (WhiteNoiseScheme scheme : schemes) {
             int schemeId = scheme.getId();
-            List<Object> schemeDetail = getOneSchemeDetail(schemeId);
+            Map<String, Object> schemeDetail = getOneSchemeDetail(schemeId);
             schemeDetails.add(schemeDetail);
         }
         return schemeDetails;
@@ -126,19 +124,19 @@ public class WhiteNoiseSchemeServiceImpl {
      * @param schemeId
      * @return
      */
-    private List<Object> getOneSchemeDetail(int schemeId) throws Exception{
-        List<Object> schemeDetail = new ArrayList<>();
+    private Map<String, Object> getOneSchemeDetail(int schemeId) throws Exception{
+        Map<String, Object> schemeDetail = new HashMap<>();
         WhiteNoiseScheme wns = whiteNoiseSchemeMapper.selectByPrimaryKey(schemeId);
         if (wns == null) {
             throw new ParamException("schemeId有误，不存在该白噪声方案");
         }
         // 不返回userId，将所有userId置零
         wns.setUserId(0);
-        schemeDetail.add(wns);
+        schemeDetail.put("scheme", wns);
 
         List<WhiteNoiseSchemeDetail> wnsds = whiteNoiseSchemeDetailService.selectBySchemeId(schemeId);
         if (wnsds != null) {
-            schemeDetail.addAll(wnsds);
+            schemeDetail.put("schemeDetail", wnsds);
         } else {
             log.warn("warn info: schemeId=" + schemeId + " 方案中没有任何声音元素详情配置");
         }

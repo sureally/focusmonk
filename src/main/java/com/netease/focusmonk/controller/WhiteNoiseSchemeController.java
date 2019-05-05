@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -125,7 +126,7 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/selectOneScheme", method = RequestMethod.GET)
     public JsonResult selectOneScheme(@RequestParam("schemeId") int schemeId) throws Exception {
-        List<Object> schemeDetail;
+        Map<String, Object> schemeDetail;
         try {
             schemeDetail = whiteNoiseSchemeService.getOneScheme(schemeId);
         } catch (ParamException pe) {
@@ -149,7 +150,7 @@ public class WhiteNoiseSchemeController {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
         }
 
-        List<List<Object>> schemeDetails;
+        List<Map<String, Object>> schemeDetails;
         try {
             schemeDetails = whiteNoiseSchemeService.selectAllSchemeByUserId(Integer.valueOf(userId));
         } catch (ParamException pe) {
