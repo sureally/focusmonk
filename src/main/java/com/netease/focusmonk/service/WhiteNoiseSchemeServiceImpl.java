@@ -132,7 +132,10 @@ public class WhiteNoiseSchemeServiceImpl {
         if (wns == null) {
             throw new ParamException("schemeId有误，不存在该白噪声方案");
         }
+        // 不返回userId，将所有userId置零
+        wns.setUserId(0);
         schemeDetail.add(wns);
+
         List<WhiteNoiseSchemeDetail> wnsds = whiteNoiseSchemeDetailService.selectBySchemeId(schemeId);
         if (wnsds != null) {
             schemeDetail.addAll(wnsds);
