@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SummaryServiceImpl {
@@ -18,6 +20,13 @@ public class SummaryServiceImpl {
     @Resource
     private SummaryMapper summaryMapper;
 
+    /**
+     * edit by zhenghang
+     * @param userId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     public PageInfo<Summary> getDayTaskByUserId(int userId, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Summary> DayTasks = summaryMapper.selectByUserId(userId);
