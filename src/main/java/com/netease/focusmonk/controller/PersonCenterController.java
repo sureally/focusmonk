@@ -7,6 +7,7 @@ import com.netease.focusmonk.model.Summary;
 import com.netease.focusmonk.model.TaskDetail;
 import com.netease.focusmonk.service.SummaryServiceImpl;
 import com.netease.focusmonk.service.TaskDetailServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +23,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author zhenghang
  * @Date 2019-04-29
  */
+@Slf4j
 @Controller
 @RequestMapping("/personCenter")
 public class PersonCenterController {
@@ -51,6 +54,10 @@ public class PersonCenterController {
         hashMap.put("summaryId",summaryId);
         hashMap.put("userId",userId);
         List<TaskDetail> taskDetailList=taskDetailService.getTaskDetail(hashMap);
+        if(taskDetailList == null){
+            log.warn("未查询到当日学习记录");
+            return new JsonResult(ResultCode.PERSON_CENTER_ERROR, "未查询当日学习记录");
+        }
         JsonResult jsonResult = new JsonResult(ResultCode.SUCCESS.getCode(),ResultCode.SUCCESS.getMessage(),taskDetailList);
         return jsonResult;
     }
@@ -66,6 +73,10 @@ public class PersonCenterController {
     @RequestMapping(value="/showDayTasks/{pageNum}/{pageSize}" ,method = RequestMethod.GET)
     public JsonResult showTasksByDay(HttpServletRequest request,int userId,@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize) throws Exception{
         PageInfo<Summary> pageInfo = summaryService.getDayTaskByUserId(userId,pageNum,pageSize);
+        if(pageInfo == null){
+            log.warn("用户尚未有学习记录");
+            return new JsonResult(ResultCode.PERSON_CENTER_ERROR, "用户尚未有学习记录");
+        }
         JsonResult jsonResult = new JsonResult(ResultCode.SUCCESS.getCode(),ResultCode.SUCCESS.getMessage(),pageInfo);
         return jsonResult;
     }
