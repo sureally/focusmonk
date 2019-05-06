@@ -1,6 +1,7 @@
 package com.netease.focusmonk.dao;
 
 import com.netease.focusmonk.model.User;
+import org.apache.ibatis.annotations.Param;
 
 public interface UserMapper {
     int deleteByPrimaryKey(Integer id);
@@ -19,9 +20,9 @@ public interface UserMapper {
 
     int addUser(User user);
 
-    int updateBookNum(Integer userId, Integer bookNum);
+    int updateBookNum(@Param("userId") Integer userId, @Param("bookNum") Integer bookNum);
 
-    int updateDefaultTaskAndPlanTime(Integer userId, String task, Integer planTime);
+    int updateDefaultTaskAndPlanTime(@Param("userId") Integer userId, @Param("task") String task, @Param("planTime") Integer planTime);
 
-    int updateStudyTime(Integer userId, Integer durationTime);
+    int updateStudyTime(@Param("userId") Integer userId, @Param("durationTime") Integer durationTime);
 }

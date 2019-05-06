@@ -26,8 +26,8 @@ public interface SummaryMapper {
     List<Summary> selectDayTaskByUserId(Integer userId);
 
     // Start Write By KHF.
-    Summary selectTodaySummaryByUserId(int userId);
+    Summary selectTodaySummaryByUserId(@Param("userId") int userId);
 
-    Summary selectSummaryByUserIdAndDay(@Param("startTime") Date startTime, Integer userId);
+    Summary selectSummaryByUserIdAndDay(@Param("startTime") Date startTime, @Param("userId") Integer userId);
     // End
 }

@@ -5,14 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.netease.focusmonk.dao.SummaryMapper;
 import com.netease.focusmonk.exception.GeneralException;
 import com.netease.focusmonk.model.Summary;
+import com.netease.focusmonk.model.TaskDetail;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SummaryServiceImpl {
@@ -30,10 +29,19 @@ public class SummaryServiceImpl {
      */
     public PageInfo<Summary> getDayTaskByUserId(int userId, int pageNum, int pageSize) {
         List<Summary> listDayTask = summaryMapper.selectDayTaskByUserId(userId);
+        String context = null;
         PageHelper.startPage(pageNum, pageSize);
         List<Summary> dayTasks = summaryMapper.selectByUserId(userId);
         for (int i = 0; i < dayTasks.size(); i++) {
-            dayTasks.get(i).setTaskDetailsList(listDayTask.get(i + (pageNum - 1) * pageSize).getTaskDetailsList());
+            List<TaskDetail> taskDetailList = listDayTask.get(i + (pageNum - 1) * pageSize).getTaskDetailsList();
+            Set<String> contextStr = new HashSet<>();
+            for (TaskDetail t:taskDetailList
+                 ) {
+                contextStr.add(t.getTask());
+            }
+            context = StringUtils.join(contextStr.toArray(),",");
+//            dayTasks.get(i).setTaskDetailsList(listDayTask.get(i + (pageNum - 1) * pageSize).getTaskDetailsList());
+            dayTasks.get(i).setContext(context);
         }
         PageInfo<Summary> pageInfo = new PageInfo<Summary>(dayTasks);
         return pageInfo;
