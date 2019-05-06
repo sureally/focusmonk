@@ -22,15 +22,20 @@ public class SummaryServiceImpl {
 
     /**
      * edit by zhenghang
+     *分页查询时间学习历程
      * @param userId
      * @param pageNum
      * @param pageSize
      * @return
      */
     public PageInfo<Summary> getDayTaskByUserId(int userId, int pageNum, int pageSize) {
+        List<Summary> listDayTask = summaryMapper.selectDayTaskByUserId(userId);
         PageHelper.startPage(pageNum, pageSize);
-        List<Summary> DayTasks = summaryMapper.selectByUserId(userId);
-        PageInfo<Summary> pageInfo = new PageInfo<Summary>(DayTasks);
+        List<Summary> dayTasks = summaryMapper.selectByUserId(userId);
+        for (int i = 0; i < dayTasks.size(); i++) {
+            dayTasks.get(i).setTaskDetailsList(listDayTask.get(i + (pageNum - 1) * pageSize).getTaskDetailsList());
+        }
+        PageInfo<Summary> pageInfo = new PageInfo<Summary>(dayTasks);
         return pageInfo;
     }
 
