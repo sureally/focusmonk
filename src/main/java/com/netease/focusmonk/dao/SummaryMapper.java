@@ -23,6 +23,8 @@ public interface SummaryMapper {
     //edit by zhenghang
     List<Summary> selectByUserId(Integer userId);
 
+    List<Summary> selectDayTaskByUserId(Integer userId);
+
     // Start Write By KHF.
     Summary selectTodaySummaryByUserId(int userId);
 

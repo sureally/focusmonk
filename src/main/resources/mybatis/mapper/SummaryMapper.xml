@@ -96,6 +96,24 @@
       summary_day = #{summaryDay,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <!-- edit By zhenghang. ==================================-->
+  <resultMap id="summaryMap" type="com.netease.focusmonk.model.Summary">
+    <id column="id" property="id"/>
+    <result column="user_id" property="userId"/>
+    <result column="sum_time" property="sumTime"/>
+    <result column="sum_book" property="sumBook"/>
+    <result column="summary_day" property="summaryDay"/>
+    <collection property="taskDetailsList" ofType="com.netease.focusmonk.model.TaskDetail" javaType="ArrayList">
+      <id column="tid" property="id"/>
+      <result column="task" property="task"/>
+    </collection>
+  </resultMap>
+  
+  <select id="selectDayTaskByUserId" resultMap="summaryMap" parameterType="java.lang.Integer">
+    SELECT s.id,s.user_id,s.sum_time,s.sum_book,s.summary_day,t.id AS tid,t.task AS task
+    FROM summary s LEFT JOIN task_detail t ON s.id = t.summary_id WHERE s.user_id = #{userId} ORDER BY s.summary_day DESC
+  </select>
   
   <select id="selectByUserId" parameterType="java.lang.Integer" resultType="com.netease.focusmonk.model.Summary">
     SELECT * FROM summary WHERE user_id = #{userId} ORDER BY summary_day DESC
