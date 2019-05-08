@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.netease.focusmonk.dao.RoomTaskMapper" >
+  <resultMap id="BaseResultMap" type="com.netease.focusmonk.model.RoomTask" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="home_id" property="homeId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="duration_time" property="durationTime" jdbcType="INTEGER" />
+    <result column="book_num" property="bookNum" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, home_id, user_id, duration_time, book_num
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from room_task
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from room_task
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.netease.focusmonk.model.RoomTask" >
+    insert into room_task (id, home_id, user_id, 
+      duration_time, book_num)
+    values (#{id,jdbcType=INTEGER}, #{homeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{durationTime,jdbcType=INTEGER}, #{bookNum,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.netease.focusmonk.model.RoomTask" >
+    insert into room_task
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="homeId != null" >
+        home_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="durationTime != null" >
+        duration_time,
+      </if>
+      <if test="bookNum != null" >
+        book_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="homeId != null" >
+        #{homeId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="durationTime != null" >
+        #{durationTime,jdbcType=INTEGER},
+      </if>
+      <if test="bookNum != null" >
+        #{bookNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.netease.focusmonk.model.RoomTask" >
+    update room_task
+    <set >
+      <if test="homeId != null" >
+        home_id = #{homeId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="durationTime != null" >
+        duration_time = #{durationTime,jdbcType=INTEGER},
+      </if>
+      <if test="bookNum != null" >
+        book_num = #{bookNum,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.netease.focusmonk.model.RoomTask" >
+    update room_task
+    set home_id = #{homeId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      duration_time = #{durationTime,jdbcType=INTEGER},
+      book_num = #{bookNum,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
