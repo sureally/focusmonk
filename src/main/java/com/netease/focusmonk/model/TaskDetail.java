@@ -28,9 +28,10 @@ public class TaskDetail {
     private Integer durationTime;
 
     @NotNull(message = "计划学习时长不能为空")
+    @Range(min = 0, max = 7200, message = "预计学习时长最多为120分钟")
     private Integer planTime;
 
-    @Length(max = 128, message = "任务名字数个数范围：0~64")
+    @Length(max = 64, message = "任务名字数个数范围：0~64")
     private String task;
 
     //0-未完成学习目标，1-完成目标-时间学习时间小于计划时间，2-实际学习时间大于等于计划学习时间
@@ -39,10 +40,11 @@ public class TaskDetail {
     private Byte taskState;
 
     @NotNull
-    @Range(min = 0, max = 1000, message = "卷数数目错误")
+    @Range(min = 0, message = "卷数数目错误")
     private Integer bookNum;
 
+    //0-单人学习，1-多人学习
     @NotNull
-    @Range(min = 0, max = 2, message = "学习类型参数错误")
+    @Range(min = 0, max = 1, message = "学习类型参数错误")
     private Byte type;
 }
