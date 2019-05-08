@@ -3,14 +3,14 @@ package com.netease.focusmonk.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.ResultCode;
+import com.netease.focusmonk.service.RedisServiceImpl;
 import com.netease.focusmonk.service.RoomServiceImpl;
 import com.netease.focusmonk.utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @author hejiecheng
@@ -25,6 +25,9 @@ public class RoomController {
     private final static int ROOM_INTRODUCE_LENGTH = 40;
 
     private final RoomServiceImpl roomService;
+
+    @Resource
+    private RedisServiceImpl redisService;
 
     @Autowired
     public RoomController(RoomServiceImpl roomService) {
@@ -89,5 +92,17 @@ public class RoomController {
             log.info("解绑房间失败：userId-{}, roomId-{}", userId, roomId);
             return JsonResult.getErrorResult();
         }
+    }
+
+    @GetMapping("/enter")
+    public JsonResult enterRoom() {
+        //TODO
+        return null;
+    }
+
+    @GetMapping("/exit")
+    public JsonResult exitRoom() {
+        //TODO
+        return null;
     }
 }
