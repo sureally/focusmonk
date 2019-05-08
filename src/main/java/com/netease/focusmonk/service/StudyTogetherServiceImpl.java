@@ -39,7 +39,7 @@ public class StudyTogetherServiceImpl {
     @Autowired
     private TaskDetailMapper taskDetailMapper;
 
-    public String getUserId(String jwt) throws ParamException{
+    public String getUserId(String jwt) throws Exception{
         if (jwt == null) {
             throw new ParamException("参数错误：jwt 获取为空");
         }
@@ -52,13 +52,13 @@ public class StudyTogetherServiceImpl {
         return userId;
     }
 
-    private String getUserinfoKey(String jwt, int homeId) throws ParamException, GeneralException {
+    private String getUserinfoKey(String jwt, int roomId) throws Exception {
         String userId = getUserId(jwt);
-        String key = RedisConstant.PREDIX_HOME + CommonConstant.REDIS_KEY_SPLICING_SYMBOL + homeId +
-                CommonConstant.REDIS_KEY_SPLICING_SYMBOL + RedisConstant.PREDIX_USER +
+        String key = RedisConstant.PREFIX_ROOM + CommonConstant.REDIS_KEY_SPLICING_SYMBOL + roomId +
+                CommonConstant.REDIS_KEY_SPLICING_SYMBOL + RedisConstant.PREFIX_USER +
                 CommonConstant.REDIS_KEY_SPLICING_SYMBOL + userId;
         if (!stringRedisTemplate.hasKey(key)) {
-            throw new GeneralException("用户userId=" + getUserId(jwt) + " 不在房间homeId=" + homeId + "中，" +
+            throw new GeneralException("用户userId=" + getUserId(jwt) + " 不在房间roomId=" + roomId + "中，" +
                     "或则房间不存在");
         }
         return key;
@@ -67,17 +67,17 @@ public class StudyTogetherServiceImpl {
     /**
      * 开始学习
      * @param jwt
-     * @param homeId
+     * @param roomId
      * @return
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean setValueForStart (String jwt, int homeId) throws Exception{
-        String key = getUserinfoKey(jwt, homeId);
+    public boolean setValueForStart (String jwt, int roomId) throws Exception{
+        String key = getUserinfoKey(jwt, roomId);
 
         Date now = new Date();
-        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_TIME, now.getTime());
-        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_REST_TIME, now.getTime());
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_TIME, String.valueOf(now.getTime()));
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_REST_TIME, String.valueOf(now.getTime()));
         stringRedisTemplate.opsForHash().put(key, RedisConstant.STATE, RedisConstant.STARTED_CODE);
 
         // TODO：记录taskDetail
@@ -88,37 +88,81 @@ public class StudyTogetherServiceImpl {
     /**
      * 暂停学习
      * @param jwt
-     * @param homeId
+     * @param roomId
      * @return
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean setValueForPause(String jwt, int homeId) throws Exception {
-        String key = getUserinfoKey(jwt, homeId);
+    public boolean setValueForPause(String jwt, int roomId) throws Exception {
+        String key = getUserinfoKey(jwt, roomId);
 
         Date now = new Date();
-        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_REST_TIME, now.getTime());
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_REST_TIME, String.valueOf(now.getTime()));
         stringRedisTemplate.opsForHash().put(key, RedisConstant.STATE, RedisConstant.STOPED_CODE);
         return true;
     }
 
-    /** 结束学习
+    /**
+     * 恢复学习
      * @param jwt
-     * @param homeId
+     * @param roomId
      * @return
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public long setValueForFinish(String jwt, int homeId, TaskDetail taskDetail) throws Exception {
-        String key = getUserinfoKey(jwt, homeId);
+    public boolean setValueForRestart (String jwt, int roomId) throws Exception{
+        String key = getUserinfoKey(jwt, roomId);
+
+        Date now = new Date();
+        String lastStartRestTime = (String) stringRedisTemplate.opsForHash().get(key, RedisConstant.START_REST_TIME);
+        String restTime = (String) stringRedisTemplate.opsForHash().get(key, RedisConstant.REST_TIME);
+        if (restTime == null ) {
+            throw new GeneralException("RedisConstant.REST_TIME 是null");
+        }
+        if (lastStartRestTime == null) {
+            throw new GeneralException("RedisConstant.START_REST_TIME 是null");
+        }
+        stringRedisTemplate.opsForHash().put(key,
+                RedisConstant.REST_TIME,
+                String.valueOf(
+                        Long.valueOf(restTime) + now.getTime() - Long.valueOf(lastStartRestTime)));
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_REST_TIME, String.valueOf(now.getTime()));
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.STATE, RedisConstant.STARTED_CODE);
+
+        return true;
+    }
+
+
+    /** 结束学习
+     * @param jwt
+     * @param roomId
+     * @return
+     * @throws Exception
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public long setValueForFinish(String jwt, int roomId, TaskDetail taskDetail) throws Exception {
+        String key = getUserinfoKey(jwt, roomId);
 
         Date now = new Date();
         long durationTime = 0;
-        long startTime = (long) stringRedisTemplate.opsForHash().get(key, RedisConstant.START_TIME);
-        long restTime = (long) stringRedisTemplate.opsForHash().get(key, RedisConstant.REST_TIME);
+        String startTimeStr = (String) stringRedisTemplate.opsForHash().get(key, RedisConstant.START_TIME);
+        String restTimeStr = (String) stringRedisTemplate.opsForHash().get(key, RedisConstant.REST_TIME);
+        String startRestTimeStr = (String) stringRedisTemplate.opsForHash().get(key, RedisConstant.START_REST_TIME);
+        if (startRestTimeStr == null) {
+            throw new GeneralException("RedisConstant.startRestTime 是null");
+        }
+        if (startTimeStr == null) {
+            throw new GeneralException("RedisConstant.START_TIME 是null");
+        }
+        if (restTimeStr == null) {
+            throw new GeneralException("RedisConstant.REST_TIME 是null");
+        }
+        long startTime = Long.valueOf(startTimeStr);
+        long restTime = Long.valueOf(restTimeStr);
+        long startRestTime = Long.valueOf(startRestTimeStr);
 
         if (Objects.equals(RedisConstant.STOPED_CODE, stringRedisTemplate.opsForHash().get(key, RedisConstant.STATE))) {
-            int startRestTime = (int) stringRedisTemplate.opsForHash().get(key, RedisConstant.START_REST_TIME);
+
             durationTime = startRestTime - startTime - restTime;
         } else {
             durationTime = now.getTime() - startTime - restTime;
@@ -127,7 +171,7 @@ public class StudyTogetherServiceImpl {
         // 保存roomtask
         RoomTask roomTaskRecord = new RoomTask();
         roomTaskRecord.setUserId(Integer.valueOf(getUserId(jwt)));
-        roomTaskRecord.setHomeId(homeId);
+        roomTaskRecord.setRoomId(roomId);
         // 这里存的是分钟
         roomTaskRecord.setDurationTime((int)(durationTime / 1000 / 60));
         roomTaskRecord.setBookNum(bookSum);
