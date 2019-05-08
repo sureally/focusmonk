@@ -21,11 +21,9 @@
     delete from room
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.netease.focusmonk.model.Room" >
-    insert into room (id, name, introduce, 
-      owner, state)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{introduce,jdbcType=VARCHAR}, 
-      #{owner,jdbcType=INTEGER}, #{state,jdbcType=INTEGER})
+  <insert id="insert" parameterType="com.netease.focusmonk.model.Room" useGeneratedKeys="true" keyProperty="id">
+    insert into room (name, introduce, owner)
+    values (#{name,jdbcType=VARCHAR}, #{introduce,jdbcType=VARCHAR}, #{owner,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.focusmonk.model.Room" >
     insert into room
@@ -89,5 +87,11 @@
       owner = #{owner,jdbcType=INTEGER},
       state = #{state,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="untiedRoom" parameterType="com.netease.focusmonk.model.Room">
+    update room
+    set owner = -1
+    where id = #{id,jdbcType=INTEGER} and owner = #{owner,jdbcType=INTEGER}
   </update>
 </mapper>
