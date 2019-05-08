@@ -24,4 +24,7 @@ public class RoomRedis implements Serializable {
         number = 0;
     }
 
+    public int getNumAndIncr() {
+        return number++;
+    }
 }
