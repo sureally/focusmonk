@@ -1,6 +1,6 @@
 package com.netease.focusmonk.khf.util;
 
-import com.netease.focusmonk.utils.RedisUtil;
+import com.netease.focusmonk.utils.RedisUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class RedisUtilsTest {
 
-    @Autowired
-    private RedisUtil redisUtil;
-
     @Test
     public void testGenerateRedisKey() {
-
-        System.out.println(redisUtil.generateKey(new String[]{"12", "12"}));
+        System.out.println(RedisUtils.generateKey(new String[]{"12", "12"}));
     }
 
 }
