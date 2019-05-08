@@ -1,7 +1,9 @@
 package com.netease.focusmonk.controller;
 
 import com.netease.focusmonk.common.JsonResult;
+import com.netease.focusmonk.service.StudyTogetherServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,9 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/studyTogetherControl")
 public class StudyTogetherController {
 
+    @Autowired
+    private StudyTogetherServiceImpl studyTogetherService;
+
     @RequestMapping(path = "/startStudy", method = RequestMethod.GET)
     public JsonResult startStudy(@RequestParam("jwt") String jwt,
-                                 int roomId){
+                                 int roomId) throws Exception{
+        String userId = studyTogetherService.getUserId(jwt);
+
+
         return JsonResult.getSuccessResult();
     }
 
@@ -42,4 +50,6 @@ public class StudyTogetherController {
                                  int roomId){
         return JsonResult.getSuccessResult();
     }
+
+
 }
