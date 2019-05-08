@@ -91,7 +91,7 @@ public class RoomServiceImpl {
         String inRoomKey = RedisUtils.generateKey(inRoomKeys);
         Boolean isInRoom = redisService.get(inRoomKey, Boolean.class);
 
-        if (isInRoom == null) {
+        if (isInRoom != null) {
             return JsonResult.getCustomResult(ResultCode.USER_REPEATEDLY_ENTERS_ROOM_ERROR);
         }
 

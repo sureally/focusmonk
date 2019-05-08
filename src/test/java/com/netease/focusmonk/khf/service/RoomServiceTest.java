@@ -1,6 +1,7 @@
 package com.netease.focusmonk.khf.service;
 
 import com.netease.focusmonk.common.RedisConstant;
+import com.netease.focusmonk.model.RedisUserInfo;
 import com.netease.focusmonk.model.RoomRedis;
 import com.netease.focusmonk.service.RedisServiceImpl;
 import com.netease.focusmonk.service.RoomServiceImpl;
@@ -12,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @ClassName RoomServiceTest
@@ -46,6 +48,21 @@ public class RoomServiceTest {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
 
+    @Test
+    public void testGet() throws IllegalAccessException {
+
+        RedisUserInfo redisUserInfo = new RedisUserInfo();
+        redisUserInfo.setUserRoomId(123);
+        redisUserInfo.setStarTime(123);
+
+        redisService.putObjToHash("konghaifeng", redisUserInfo);
+
+        Map<Object, Object> map = redisService.getMapFromHash("konghaifeng");
+
+        for (Object value : map.values()) {
+            System.out.println(value);
+        }
     }
 }
