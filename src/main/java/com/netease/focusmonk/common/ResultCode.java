@@ -24,8 +24,11 @@ public enum ResultCode {
     CODE_INVALID("001001", "code invalid"),
     CODE_ERROR("001002", "code error"),
 
-
-
+    //多人共同学习
+    FULL_ROOM_ERROR("004001", "该房间已经满员"),
+    USER_REPEATEDLY_ENTERS_ROOM_ERROR("004002", "用户不得重复进入房间"),
+    USER_INFO_PUT_REDIS_HASH_ERROR("004003", "用户信息格式有误"),
+    ROOM_NOT_EXIST_ERROR("004003", "该房间不存在"),
     // Start Write By KHF.
 
     //保存学习任务记录接口请求参数异常
@@ -33,7 +36,6 @@ public enum ResultCode {
 
     //学习任务记录数据完整性异常
     TASK_DETAIL_DATA_ERROR("002002", "学习任务记录数据完整性有误"),
-
     // End Write By KHF.
 
     WHITE_NOISE_PARAM_ERROR("005001", "白噪声方案请求参数错误"),
@@ -44,7 +46,7 @@ public enum ResultCode {
     private String code;
     private String message;
 
-    private ResultCode(String code, String message) {
+    ResultCode(String code, String message) {
         this.code = code;
         this.message = message;
     }

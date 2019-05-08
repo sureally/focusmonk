@@ -1,9 +1,11 @@
 package com.netease.focusmonk.service;
 
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -54,6 +56,19 @@ public class RedisServiceImpl {
         redisTemplate.opsForHash().putAll(key, valueMap);
     }
 
+    public void putObjToHash(String key, Object object) throws IllegalAccessException {
+
+
+        Field[] fields = object.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true);
+            String fieldName = field.getName();
+            Object fieldValue = field.get(object);
+            putOneToHash(key, fieldName, fieldValue);
+        }
+    }
+
     //获取Redis中的Hash中的一条记录
     public Object getOneFromHash(String key, Object mapKey) {
         return redisTemplate.opsForHash().get(key, mapKey);
@@ -73,5 +88,17 @@ public class RedisServiceImpl {
         redisTemplate.opsForHash().put(key, mapKey, mapValue);
 
         return true;
+    }
+
+    public Integer addOneToInt(String key) {
+        Integer value = get(key, Integer.class);
+        set(key, ++value);
+        return value;
+    }
+
+    public Long addOneToLong(String key) {
+        Long value = get(key, Long.class);
+        set(key, ++value);
+        return value;
     }
 }

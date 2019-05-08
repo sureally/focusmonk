@@ -2,11 +2,14 @@ package com.netease.focusmonk.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.netease.focusmonk.common.JsonResult;
+import com.netease.focusmonk.common.RedisConstant;
 import com.netease.focusmonk.common.ResultCode;
 import com.netease.focusmonk.service.RedisServiceImpl;
 import com.netease.focusmonk.service.RoomServiceImpl;
 import com.netease.focusmonk.utils.JWTUtil;
+import com.netease.focusmonk.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,9 +98,26 @@ public class RoomController {
     }
 
     @GetMapping("/enter")
-    public JsonResult enterRoom() {
-        //TODO
-        return null;
+    public JsonResult enter(@RequestParam(value = "jwt") String jwt,
+                                @RequestParam(value = "roomId") String roomId) {
+
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        String userId = sessionInfo.getString("userId");
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+
+        if (roomId == null || StringUtils.isBlank(roomId)) {
+            return JsonResult.getCustomResult(ResultCode.REQUEST_PARAMETER_EXCEPTION);
+        }
+
+        try {
+            return roomService.enterRoom(userId, roomId);
+        } catch (IllegalAccessException e) {
+            log.error("用户信息存入Redis hash失败", e);
+            return JsonResult.getCustomResult(ResultCode.USER_INFO_PUT_REDIS_HASH_ERROR);
+        }
     }
 
     @GetMapping("/exit")

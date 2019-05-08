@@ -12,11 +12,13 @@ public interface RedisConstant {
      *  使用下面的常量拼接相应的 redis key。
      *  用户信息 key: PREFIX_ROOM + "_" + roomId + "_" + PREFIX_USER + "_" + userId
      *  房间信息 key: PREFIX_ROOM + "_" + roomId
-     *  用户是否在房间内: PREFIX_INROOM + "_" + roomId
+     *  房间人数 key: PREFIX_ROOM + "_" + roomId + "_" + PEOPLE_NUMBER
+     *  用户是否在房间内: PREFIX_INROOM + "_" + userId
      */
     String PREFIX_ROOM = "room";
     String PREFIX_USER = "user";
     String PREFIX_INROOM = "inroom";
+    String SUFFIX_ROOM_PEOPLE_NUMBER = "people_number";
 
     // 用户信息 value 对应的 hashkey 常量
     String USER_ROOM_ID = "userRoomId";
