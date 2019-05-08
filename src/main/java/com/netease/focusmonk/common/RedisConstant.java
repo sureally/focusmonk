@@ -10,13 +10,13 @@ package com.netease.focusmonk.common;
 public interface RedisConstant {
     /**
      *  使用下面的常量拼接相应的 redis key。
-     *  用户信息 key: PREDIX_ROOM + "_" + roomId + "_" + PREDIX_USER + "_" + userId
-     *  房间信息 key: PREDIX_ROOM + "_" + roomId
-     *  用户是否在房间内: PREDIX_INROOM + "_" + roomId
+     *  用户信息 key: PREFIX_ROOM + "_" + roomId + "_" + PREFIX_USER + "_" + userId
+     *  房间信息 key: PREFIX_ROOM + "_" + roomId
+     *  用户是否在房间内: PREFIX_INROOM + "_" + roomId
      */
-    String PREDIX_ROOM = "room";
-    String PREDIX_USER = "user";
-    String PREDIX_INROOM = "inroom";
+    String PREFIX_ROOM = "room";
+    String PREFIX_USER = "user";
+    String PREFIX_INROOM = "inroom";
 
     // 用户信息 value 对应的 hashkey 常量
     String USER_ROOM_ID = "userRoomId";

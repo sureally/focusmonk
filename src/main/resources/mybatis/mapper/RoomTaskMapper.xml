@@ -3,13 +3,13 @@
 <mapper namespace="com.netease.focusmonk.dao.RoomTaskMapper" >
   <resultMap id="BaseResultMap" type="com.netease.focusmonk.model.RoomTask" >
     <id column="id" property="id" jdbcType="INTEGER" />
-    <result column="home_id" property="homeId" jdbcType="INTEGER" />
+    <result column="home_id" property="roomId" jdbcType="INTEGER" />
     <result column="user_id" property="userId" jdbcType="INTEGER" />
     <result column="duration_time" property="durationTime" jdbcType="INTEGER" />
     <result column="book_num" property="bookNum" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, home_id, user_id, duration_time, book_num
+    id, room_id, user_id, duration_time, book_num
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -22,9 +22,9 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.netease.focusmonk.model.RoomTask" >
-    insert into room_task (id, home_id, user_id, 
+    insert into room_task (id, room_id, user_id,
       duration_time, book_num)
-    values (#{id,jdbcType=INTEGER}, #{homeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+    values (#{id,jdbcType=INTEGER}, #{roomId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
       #{durationTime,jdbcType=INTEGER}, #{bookNum,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.focusmonk.model.RoomTask" >
@@ -33,8 +33,8 @@
       <if test="id != null" >
         id,
       </if>
-      <if test="homeId != null" >
-        home_id,
+      <if test="roomId != null" >
+        room_id,
       </if>
       <if test="userId != null" >
         user_id,
@@ -50,8 +50,8 @@
       <if test="id != null" >
         #{id,jdbcType=INTEGER},
       </if>
-      <if test="homeId != null" >
-        #{homeId,jdbcType=INTEGER},
+      <if test="roomId != null" >
+        #{roomId,jdbcType=INTEGER},
       </if>
       <if test="userId != null" >
         #{userId,jdbcType=INTEGER},
@@ -67,8 +67,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.netease.focusmonk.model.RoomTask" >
     update room_task
     <set >
-      <if test="homeId != null" >
-        home_id = #{homeId,jdbcType=INTEGER},
+      <if test="roomId != null" >
+        room_id = #{roomId,jdbcType=INTEGER},
       </if>
       <if test="userId != null" >
         user_id = #{userId,jdbcType=INTEGER},
@@ -84,7 +84,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.netease.focusmonk.model.RoomTask" >
     update room_task
-    set home_id = #{homeId,jdbcType=INTEGER},
+    set room_id = #{roomId,jdbcType=INTEGER},
       user_id = #{userId,jdbcType=INTEGER},
       duration_time = #{durationTime,jdbcType=INTEGER},
       book_num = #{bookNum,jdbcType=INTEGER}

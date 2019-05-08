@@ -3,7 +3,7 @@ package com.netease.focusmonk.model;
 public class RoomTask {
     private Integer id;
 
-    private Integer homeId;
+    private Integer roomId;
 
     private Integer userId;
 
@@ -19,12 +19,12 @@ public class RoomTask {
         this.id = id;
     }
 
-    public Integer getHomeId() {
-        return homeId;
+    public Integer getRoomId() {
+        return roomId;
     }
 
-    public void setHomeId(Integer homeId) {
-        this.homeId = homeId;
+    public void setRoomId(Integer roomId) {
+        this.roomId = roomId;
     }
 
     public Integer getUserId() {
