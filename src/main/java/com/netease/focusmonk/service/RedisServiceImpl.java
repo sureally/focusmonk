@@ -44,4 +44,34 @@ public class RedisServiceImpl {
     public Boolean containKey(String key) {
         return redisTemplate.hasKey(key);
     }
+
+    //插入一条记录到Redis中的Hash中
+    public void putOneToHash(String key, Object mapKey, Object mapValue) {
+        redisTemplate.opsForHash().put(key, mapKey, mapValue);
+    }
+
+    public void putAllToHash(String key, Map<Object, Object> valueMap) {
+        redisTemplate.opsForHash().putAll(key, valueMap);
+    }
+
+    //获取Redis中的Hash中的一条记录
+    public Object getOneFromHash(String key, Object mapKey) {
+        return redisTemplate.opsForHash().get(key, mapKey);
+    }
+
+    public Map<Object, Object> getMapFromHash(String key) {
+        return redisTemplate.opsForHash().entries(key);
+    }
+
+    //修改Redis的Hash中的一条记录
+    public boolean updateOneToHash(String key, Object mapKey, Object mapValue) {
+
+        if (containKey(key) == null) {
+            return false;
+        }
+
+        redisTemplate.opsForHash().put(key, mapKey, mapValue);
+
+        return true;
+    }
 }

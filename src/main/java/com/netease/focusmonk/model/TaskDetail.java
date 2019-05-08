@@ -28,7 +28,7 @@ public class TaskDetail {
     private Integer durationTime;
 
     @NotNull(message = "计划学习时长不能为空")
-    @Range(min = 0, max = 7200, message = "预计学习时长最多为120分钟")
+    @Range(min = 0, message = "计划学习时长有误")
     private Integer planTime;
 
     @Length(max = 64, message = "任务名字数个数范围：0~64")
