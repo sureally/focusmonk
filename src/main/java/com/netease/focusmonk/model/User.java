@@ -3,11 +3,11 @@ package com.netease.focusmonk.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.io.Serializable;
 
 @Getter
 @Setter
-public class User {
+public class User implements Serializable {
     private Integer id;
 
     private String username;

@@ -9,7 +9,6 @@ import com.netease.focusmonk.model.User;
 import com.netease.focusmonk.service.LoginServiceImpl;
 import com.netease.focusmonk.service.SMSServiceImpl;
 import com.netease.focusmonk.utils.JWTUtil;
-import com.netease.focusmonk.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +37,7 @@ public class SDSController {
     private final SMSServiceImpl smsService;
 
     @Autowired
-    public SDSController(DeviceWebSocketHandler deviceWebSocketHandler, RedisUtil redisUtil,
+    public SDSController(DeviceWebSocketHandler deviceWebSocketHandler,
                          LoginServiceImpl loginService, SMSServiceImpl smsService) {
         this.deviceWebSocketHandler = deviceWebSocketHandler;
         this.loginService = loginService;
