@@ -9,12 +9,12 @@ package com.netease.focusmonk.common;
  **/
 public interface RedisConstant {
     // redis key 的构建前缀
-    String PREDIX_HOME = "home";
+    String PREDIX_HOME = "room";
     String PREDIX_USER = "user";
-    String PREDIX_INHOME = "inhome";
+    String PREDIX_INHOME = "inroom";
 
     // 用户信息valued对应的hashkey常量
-    String USER_HOME_ID = "userHomeId";
+    String USER_HOME_ID = "userRoomId";
     String START_TIME = "starTime";
     String START_REST_TIME = "startRestTime";
     String REST_TIME = "restTime";
