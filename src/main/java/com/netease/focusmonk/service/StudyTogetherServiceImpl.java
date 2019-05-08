@@ -1,8 +1,14 @@
 package com.netease.focusmonk.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.netease.focusmonk.common.CommonConstant;
+import com.netease.focusmonk.common.RedisConstant;
+import com.netease.focusmonk.dao.RoomTaskMapper;
+import com.netease.focusmonk.dao.TaskDetailMapper;
 import com.netease.focusmonk.exception.GeneralException;
 import com.netease.focusmonk.exception.ParamException;
+import com.netease.focusmonk.model.RoomTask;
+import com.netease.focusmonk.model.TaskDetail;
 import com.netease.focusmonk.utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +30,14 @@ import java.util.Objects;
 @Service
 public class StudyTogetherServiceImpl {
 
-    private final String PREFIX_HOME = "home_";
-    private final String PREFIX_USER = "_user_";
-
-    private final String START_REST_TIME = "startRestTime";
-    private final String START_TIME = "starTime";
-    private final String REST_TIME = "restTime";
-    private final String STATE = "state";
-    private final String STARTED_CODE = "1";
-    private final String STOPED_CODE = "0";
-
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private RoomTaskMapper roomTaskMapper;
+
+    @Autowired
+    private TaskDetailMapper taskDetailMapper;
 
     public String getUserId(String jwt) throws ParamException{
         if (jwt == null) {
@@ -52,7 +54,9 @@ public class StudyTogetherServiceImpl {
 
     private String getUserinfoKey(String jwt, int homeId) throws ParamException, GeneralException {
         String userId = getUserId(jwt);
-        String key = PREFIX_HOME + homeId + PREFIX_USER + userId;
+        String key = RedisConstant.PREDIX_HOME + CommonConstant.REDIS_KEY_SPLICING_SYMBOL + homeId +
+                CommonConstant.REDIS_KEY_SPLICING_SYMBOL + RedisConstant.PREDIX_USER +
+                CommonConstant.REDIS_KEY_SPLICING_SYMBOL + userId;
         if (!stringRedisTemplate.hasKey(key)) {
             throw new GeneralException("用户userId=" + getUserId(jwt) + " 不在房间homeId=" + homeId + "中，" +
                     "或则房间不存在");
@@ -72,9 +76,12 @@ public class StudyTogetherServiceImpl {
         String key = getUserinfoKey(jwt, homeId);
 
         Date now = new Date();
-        stringRedisTemplate.opsForHash().put(key, START_TIME, now.getTime());
-        stringRedisTemplate.opsForHash().put(key, START_REST_TIME, now.getTime());
-        stringRedisTemplate.opsForHash().put(key, STATE, STARTED_CODE);
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_TIME, now.getTime());
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_REST_TIME, now.getTime());
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.STATE, RedisConstant.STARTED_CODE);
+
+        // TODO：记录taskDetail
+
         return true;
     }
 
@@ -90,8 +97,8 @@ public class StudyTogetherServiceImpl {
         String key = getUserinfoKey(jwt, homeId);
 
         Date now = new Date();
-        stringRedisTemplate.opsForHash().put(key, START_REST_TIME, now.getTime());
-        stringRedisTemplate.opsForHash().put(key, STATE, STOPED_CODE);
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.START_REST_TIME, now.getTime());
+        stringRedisTemplate.opsForHash().put(key, RedisConstant.STATE, RedisConstant.STOPED_CODE);
         return true;
     }
 
@@ -102,33 +109,54 @@ public class StudyTogetherServiceImpl {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public long setValueForFinish(String jwt, int homeId) throws Exception {
+    public long setValueForFinish(String jwt, int homeId, TaskDetail taskDetail) throws Exception {
         String key = getUserinfoKey(jwt, homeId);
 
-        long durationTime = getDurationTime(key);
+        Date now = new Date();
+        long durationTime = 0;
+        long startTime = (long) stringRedisTemplate.opsForHash().get(key, RedisConstant.START_TIME);
+        long restTime = (long) stringRedisTemplate.opsForHash().get(key, RedisConstant.REST_TIME);
 
-        // 数据库持久化
+        if (Objects.equals(RedisConstant.STOPED_CODE, stringRedisTemplate.opsForHash().get(key, RedisConstant.STATE))) {
+            int startRestTime = (int) stringRedisTemplate.opsForHash().get(key, RedisConstant.START_REST_TIME);
+            durationTime = startRestTime - startTime - restTime;
+        } else {
+            durationTime = now.getTime() - startTime - restTime;
+        }
+        int bookSum = (int)(durationTime / 1000 / 60 / 20);
+        // 保存roomtask
+        RoomTask roomTaskRecord = new RoomTask();
+        roomTaskRecord.setUserId(Integer.valueOf(getUserId(jwt)));
+        roomTaskRecord.setHomeId(homeId);
+        // 这里存的是分钟
+        roomTaskRecord.setDurationTime((int)(durationTime / 1000 / 60));
+        roomTaskRecord.setBookNum(bookSum);
+        roomTaskMapper.insert(roomTaskRecord);
 
+        // 保存taskDetail
+        taskDetail.setStartTime(new Date(startTime));
+        taskDetail.setEndTime(new Date(startTime + durationTime));
+        // 这里存的是分钟
+        taskDetail.setDurationTime((int)(durationTime / 1000 / 60));
+        taskDetail.setBookNum(bookSum);
+        byte taskState = taskDetail.getTaskState();
+
+        int planTime = taskDetail.getPlanTime();
+        if (taskState != 0) {
+            if (planTime < (int)(durationTime / 1000 / 60)) {
+                taskState = 1;
+            } else {
+                taskState = 2;
+            }
+        }
+        taskDetail.setTaskState(taskState);
+        taskDetailMapper.insert(taskDetail);
 
         // TODO: 调用退出房间接口
 
         return durationTime;
     }
 
-    private long getDurationTime (String key) throws Exception {
-        Date now = new Date();
-        long durationTime = 0L;
-        long startTime = (long) stringRedisTemplate.opsForHash().get(key, START_TIME);
-        long restTime = (long) stringRedisTemplate.opsForHash().get(key, REST_TIME);
-
-        if (Objects.equals(STOPED_CODE, stringRedisTemplate.opsForHash().get(key, STATE))) {
-            long startRestTime = (long) stringRedisTemplate.opsForHash().get(key, START_REST_TIME);
-            durationTime = startRestTime - startTime - restTime;
-        } else {
-            durationTime = now.getTime() - startTime - restTime;
-        }
-        return durationTime;
-    }
 
 
 }

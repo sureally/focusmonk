@@ -27,9 +27,7 @@ public class StudyTogetherController {
     @RequestMapping(path = "/startStudy", method = RequestMethod.GET)
     public JsonResult startStudy(@RequestParam("jwt") String jwt,
                                  int roomId) throws Exception{
-        String userId = studyTogetherService.getUserId(jwt);
-
-
+        studyTogetherService.setValueForStart(jwt, roomId);
         return JsonResult.getSuccessResult();
     }
 
