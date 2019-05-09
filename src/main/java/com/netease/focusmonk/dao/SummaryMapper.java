@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface SummaryMapper {
     int deleteByPrimaryKey(Integer id);
@@ -24,6 +25,8 @@ public interface SummaryMapper {
     List<Summary> selectByUserId(Integer userId);
 
     List<Summary> selectDayTaskByUserId(Integer userId);
+
+    Integer getBookNumsBySummaryDay(@Param("userId") int userId,@Param("date") Date date);
 
     // Start Write By KHF.
     Summary selectTodaySummaryByUserId(@Param("userId") int userId);

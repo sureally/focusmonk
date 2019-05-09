@@ -52,6 +52,9 @@ public class PersonCenterController {
         if (userId == null || userId.isEmpty()) {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
         }
+        if (summaryId==0){
+            return JsonResult.getCustomResult(ResultCode.PERSON_CENTER_ERROR);
+        }
         HashMap<String,Integer> hashMap = new HashMap<>();
         hashMap.put("summaryId",summaryId);
         hashMap.put("userId",Integer.valueOf(userId));
@@ -71,7 +74,7 @@ public class PersonCenterController {
      */
     @ResponseBody
     @RequestMapping(value="/showDayTasks" ,method = RequestMethod.GET)
-    public JsonResult showTasksByDay(HttpServletRequest request,@RequestParam(value = "jwt") String jwt,@RequestParam("pageNum") int pageNum, @RequestParam("pageSize") int pageSize) throws Exception{
+    public JsonResult showTasksByDay(HttpServletRequest request,@RequestParam(value = "jwt") String jwt,@RequestParam(value = "pageNum",defaultValue ="1") int pageNum, @RequestParam(value = "pageSize",defaultValue = "10") int pageSize) throws Exception{
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
         String userId = sessionInfo.getString("userId");
@@ -84,5 +87,29 @@ public class PersonCenterController {
             return new JsonResult(ResultCode.PERSON_CENTER_ERROR, "用户尚未有学习记录");
         }
         return JsonResult.getSuccessResult(pageInfo);
+    }
+
+    /**
+     * 查询当天的经书数
+     * @param request
+     * @param jwt
+     * @return 经书数
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping(value="/getCurrentDayBookNums" ,method = RequestMethod.GET)
+    public JsonResult getCurrentDayBookNums(HttpServletRequest request,@RequestParam(value = "jwt") String jwt) throws Exception{
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        String userId = sessionInfo.getString("userId");
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+        int bookNums = summaryService.getBookNumsBySummaryDay(Integer.valueOf(userId),new Date());
+        if (bookNums==0){
+            log.warn("今天没有学习记录");
+            return JsonResult.getCustomResult(ResultCode.GENERAL_ERROR,bookNums);
+        }
+        return JsonResult.getSuccessResult(bookNums);
     }
 }
