@@ -29,6 +29,10 @@ public enum ResultCode {
     USER_REPEATEDLY_ENTERS_ROOM_ERROR("004002", "用户不得重复进入房间"),
     USER_INFO_PUT_REDIS_HASH_ERROR("004003", "用户信息格式有误"),
     ROOM_NOT_EXIST_ERROR("004003", "该房间不存在"),
+    // 多人学习，学习接口 by shu wj
+    STUDY_TOGETHER_PARAM_ERROR("007001", " 多人学习接口请求参数异常"),
+    STUDY_TOGETHER_GENERAL_ERROR("007002", " 多人学习接口通用异常"),
+
     // Start Write By KHF.
 
     //保存学习任务记录接口请求参数异常

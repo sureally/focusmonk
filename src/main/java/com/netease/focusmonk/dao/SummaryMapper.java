@@ -4,7 +4,6 @@ import com.netease.focusmonk.model.Summary;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 public interface SummaryMapper {
@@ -30,4 +29,5 @@ public interface SummaryMapper {
 
     Summary selectSummaryByUserIdAndDay(@Param("startTime") Date startTime, @Param("userId") Integer userId);
     // End
+
 }
