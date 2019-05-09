@@ -119,6 +119,10 @@
     SELECT * FROM summary WHERE user_id = #{userId} ORDER BY summary_day DESC
   </select>
 
+  <select id="getBookNumsBySummaryDay" resultType="java.lang.Integer">
+    SELECT sum_book FROM summary WHERE TO_DAYS(summary_day) = TO_DAYS(#{date})
+    AND user_id = #{userId}
+  </select>
   <!-- Start Write By KHF. ==================================-->
 
   <!-- 查询某一用户的所有学习任务汇总记录 -->

@@ -47,6 +47,20 @@ public class SummaryServiceImpl {
         return pageInfo;
     }
 
+    /**
+     * 获取当天经书
+     * @param date
+     * @param userId 用户ID
+     * @return
+     */
+    public int getBookNumsBySummaryDay(int userId,Date date){
+        Integer bookNums = summaryMapper.getBookNumsBySummaryDay(userId,date);
+        if(bookNums==null){
+            return 0;
+        }
+        return bookNums;
+    }
+
     // KHF Start
 
     //添加一条汇总记录
