@@ -8,7 +8,6 @@ import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.RoomTask;
 import com.netease.focusmonk.model.Summary;
 import com.netease.focusmonk.model.TaskDetail;
-import com.netease.focusmonk.utils.CalendarUtils;
 import com.netease.focusmonk.utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Objects;
+
+import static com.netease.focusmonk.common.CommonConstant.*;
 
 /**
  * @ClassName com.netease.focusmonk.service.StudyTogetherServiceImpl
@@ -56,6 +57,7 @@ public class StudyTogetherServiceImpl {
         Date now = new Date();
         setRedisHashValue(key, RedisConstant.START_TIME, now);
         setRedisHashValue(key, RedisConstant.START_REST_TIME, now);
+        setRedisHashValue(key, RedisConstant.REST_TIME, 0);
         setRedisHashValue(key, RedisConstant.STATE, RedisConstant.STARTED_CODE);
     }
 
@@ -87,9 +89,16 @@ public class StudyTogetherServiceImpl {
         String key = getUserinfoKey(jwt, roomId);
 
         Date now = new Date();
-        long restTime = getLongFromRedisHashValue(key, RedisConstant.REST_TIME);
+        long lastRestTime = getLongFromRedisHashValue(key, RedisConstant.REST_TIME);
         long lastStartRestTime = getLongFromRedisHashValue(key, RedisConstant.START_REST_TIME);
-        setRedisHashValue(key, RedisConstant.REST_TIME, restTime + now.getTime() - lastStartRestTime);
+        long restTime = lastRestTime + now.getTime() - lastStartRestTime;
+        if (restTime < 0) {
+            throw new GeneralException("多人学习，学习时长为负数");
+        }
+        if (restTime > Integer.MAX_VALUE) {
+            throw new GeneralException("多人学习，学习时长为超过Int最大值");
+        }
+        setRedisHashValue(key, RedisConstant.REST_TIME, restTime);
         setRedisHashValue(key, RedisConstant.START_REST_TIME, now);
         setRedisHashValue(key, RedisConstant.STATE, RedisConstant.STARTED_CODE);
     }
@@ -102,7 +111,7 @@ public class StudyTogetherServiceImpl {
      * @throws Exception
      */
     @Transactional(rollbackFor = Exception.class)
-    public long setValueForFinish(String jwt, int roomId, TaskDetail taskDetail) throws Exception {
+    public TaskDetail setValueForFinish(String jwt, int roomId, TaskDetail taskDetail) throws Exception {
         String key = getUserinfoKey(jwt, roomId);
         int userId = Integer.valueOf(getUserId(jwt));
 
@@ -119,15 +128,20 @@ public class StudyTogetherServiceImpl {
             // 结束学习时，用户状态为正则学习
             durationTime = now.getTime() - startTime - restTime;
         }
-
         if (durationTime < 0) {
-            throw new GeneralException("多人学习，学习时长为负数");
+            throw new GeneralException("多人学习，休息时长为负数");
         }
         if (durationTime > Integer.MAX_VALUE) {
-            throw new GeneralException("多人学习，学习时长为超过Int最大值");
+            throw new GeneralException("多人学习，休息时长为超过Int最大值");
         }
 
-        int bookSum = milli2Minute(durationTime);
+        // 可以不用更新的redis的值，但是如果此Redis没有被成功删除，调用此接口可能会得到较大的学习数据
+        setRedisHashValue(key, RedisConstant.START_TIME, now);
+        setRedisHashValue(key, RedisConstant.START_REST_TIME, now);
+        setRedisHashValue(key, RedisConstant.REST_TIME, 0);
+        setRedisHashValue(key, RedisConstant.STATE, RedisConstant.STOPED_CODE);
+
+        int bookSum = milli2Minute(durationTime) / TIME_OF_BOOK_GENERATION;
         // 保存房间学习
         saveRoomTask(userId, roomId, durationTime, bookSum);
 
@@ -136,12 +150,12 @@ public class StudyTogetherServiceImpl {
 
         // 保存学习详情
         taskDetail.setSummaryId(summaryId);
-        saveTaskDetail(taskDetail, startTime, durationTime, bookSum);
+        saveTaskDetail(taskDetail, userId, startTime, durationTime, bookSum);
 
 
         // TODO: 调用退出房间接口
 
-        return durationTime;
+        return taskDetail;
     }
 
     private String getUserId(String jwt) throws Exception{
@@ -177,6 +191,7 @@ public class StudyTogetherServiceImpl {
 
     // 从redis读取hashkey并转换为long
     private long getLongFromRedisHashValue(String key, String hashkey) throws GeneralException {
+        checkInputForRedis(key, hashkey);
         String val = (String) stringRedisTemplate.opsForHash().get(key, hashkey);
         if (val == null) {
             throw new GeneralException("redis key: " + key + ", hashkey: " + hashkey  + "对应value读出为 null");
@@ -185,6 +200,7 @@ public class StudyTogetherServiceImpl {
     }
 
     private void setRedisHashValue(String key, String hashkey, Object obj) throws Exception{
+        checkInputForRedis(key, hashkey);
         if (obj instanceof String) {
             stringRedisTemplate.opsForHash().put(key, hashkey, obj);
         } else if (obj instanceof Number) {
@@ -229,9 +245,10 @@ public class StudyTogetherServiceImpl {
     }
 
     // 保存taskDetail
-    private void saveTaskDetail(TaskDetail taskDetail, long startTime, long durationTime, int bookSum) throws Exception{
+    private void saveTaskDetail(TaskDetail taskDetail, int userId, long startTime, long durationTime, int bookSum) throws Exception{
         taskDetail.setStartTime(new Date(startTime));
         taskDetail.setEndTime(new Date(startTime + durationTime));
+        taskDetail.setUserId(userId);
         // 这里存的是分钟
         taskDetail.setDurationTime(milli2Minute(durationTime));
         taskDetail.setBookNum(bookSum);
@@ -253,12 +270,21 @@ public class StudyTogetherServiceImpl {
      * @param milli
      * @return
      */
-    public int milli2Minute(long milli) throws GeneralException {
-        long mins = milli / CalendarUtils.MILLI_2_SECOND / CalendarUtils.SECOND_2_MINUTE;
+    private int milli2Minute(long milli) throws GeneralException {
+        long mins = milli / MILLI_2_SECOND / SECOND_2_MINUTE;
         if (mins > Integer.MAX_VALUE) {
             throw new GeneralException("毫秒转换为分钟后数值大于 Integer.MAX_VALUE");
         }
         return (int) mins;
+    }
+
+    private void checkInputForRedis(String key, String hashkey) throws GeneralException {
+        if (key == null) {
+            throw new GeneralException("redis key: " + key + " 为 null");
+        }
+        if (hashkey == null) {
+            throw new GeneralException("redis hashkey: " + hashkey + " 为 null");
+        }
     }
 
 }

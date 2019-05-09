@@ -86,9 +86,15 @@ public class StudyTogetherController {
         taskDetail.setTaskState(redisTaskDetailAO.getTaskState());
         if (redisTaskDetailAO.getTask() != null) {
             taskDetail.setTask(redisTaskDetailAO.getTask());
+        } else {
+            // 任务默认为空
+            taskDetail.setTask("");
         }
+        TaskDetail updateTaskDetail = null;
         try {
-            studyTogetherService.setValueForFinish(jwt, roomId, taskDetail);
+            updateTaskDetail = studyTogetherService.setValueForFinish(jwt, roomId, taskDetail);
+            // 隐藏userId
+            updateTaskDetail.setUserId(0);
         } catch (ParamException pe) {
             log.error("多人学习接口请求参数异常：", pe);
             return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
@@ -96,7 +102,7 @@ public class StudyTogetherController {
             log.error("多人学习接口通用异常：", ge);
             return new JsonResult(ResultCode.STUDY_TOGETHER_GENERAL_ERROR, ge.getMessage());
         }
-        return JsonResult.getSuccessResult();
+        return JsonResult.getSuccessResult(updateTaskDetail);
     }
 
 
