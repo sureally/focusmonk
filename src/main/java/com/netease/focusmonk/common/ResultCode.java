@@ -32,6 +32,7 @@ public enum ResultCode {
     // 多人学习，学习接口 by shu wj
     STUDY_TOGETHER_PARAM_ERROR("007001", " 多人学习接口请求参数异常"),
     STUDY_TOGETHER_GENERAL_ERROR("007002", " 多人学习接口通用异常"),
+    STUDY_TOGETHER_SUCEESS("007000", " 多人学习接口成功"),
 
     // Start Write By KHF.
 

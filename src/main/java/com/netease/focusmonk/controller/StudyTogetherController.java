@@ -36,6 +36,7 @@ public class StudyTogetherController {
                                  int roomId) throws Exception{
         try {
             studyTogetherService.setValueForStart(jwt, roomId);
+            log.info("开始学习: " + "用户userId=" + studyTogetherService.getUserId(jwt) + " , roomId=" + roomId);
         } catch (ParamException pe) {
             log.error("多人学习接口请求参数异常：", pe);
             return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
@@ -51,6 +52,7 @@ public class StudyTogetherController {
                                  int roomId) throws Exception {
         try {
             studyTogetherService.setValueForPause(jwt, roomId);
+            log.info("暂停学习: " + "用户userId=" + studyTogetherService.getUserId(jwt) + " , roomId=" + roomId);
         } catch (ParamException pe) {
             log.error("多人学习接口请求参数异常：", pe);
             return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
@@ -66,6 +68,7 @@ public class StudyTogetherController {
                                  int roomId) throws Exception {
         try {
             studyTogetherService.setValueForRestart(jwt, roomId);
+            log.info("重新开始学习: " + "用户userId=" + studyTogetherService.getUserId(jwt) + " , roomId=" + roomId);
         } catch (ParamException pe) {
             log.error("多人学习接口请求参数异常：", pe);
             return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
@@ -95,6 +98,8 @@ public class StudyTogetherController {
             updateTaskDetail = studyTogetherService.setValueForFinish(jwt, roomId, taskDetail);
             // 隐藏userId
             updateTaskDetail.setUserId(0);
+            log.info("结束学习: 用户userId=" + studyTogetherService.getUserId(jwt) + " , roomId=" + roomId +
+                    "返回detail: " + updateTaskDetail.toString());
         } catch (ParamException pe) {
             log.error("多人学习接口请求参数异常：", pe);
             return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());

@@ -158,7 +158,7 @@ public class StudyTogetherServiceImpl {
         return taskDetail;
     }
 
-    private String getUserId(String jwt) throws Exception{
+    public String getUserId(String jwt) throws Exception{
         if (jwt == null) {
             throw new ParamException("参数错误：jwt 获取为空");
         }

@@ -2,15 +2,16 @@ package com.netease.focusmonk.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Getter
 @Setter
+@ToString
 public class TaskDetail {
     private Integer id;
 
