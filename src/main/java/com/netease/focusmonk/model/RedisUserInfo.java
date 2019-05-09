@@ -13,17 +13,17 @@ import java.io.Serializable;
 @Data
 public class RedisUserInfo implements Serializable {
 
-    private int userRoomId;
+    private Integer userRoomId;
 
     //单位毫秒
-    private long starTime;
+    private Long starTime;
 
     //单位毫秒
-    private long startRestTime;
+    private Long startRestTime;
 
     //单位毫秒
-    private long restTime;
+    private Long restTime;
 
     //1-学习中，0-未学习
-    private int state;
+    private Integer state;
 }

@@ -1,11 +1,12 @@
 package com.netease.focusmonk.service;
 
+import com.netease.focusmonk.utils.RedisUtils;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.support.atomic.RedisAtomicLong;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -20,19 +21,26 @@ public class RedisServiceImpl {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
-    public void set(String key, Object value) {
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    public void set(String key, String value) {
+        stringRedisTemplate.opsForValue().set(key, value);
+    }
+
+    public void setObject(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    public void set(String key, Map<String, Object> valueMap) {
-        redisTemplate.opsForHash().putAll(key, valueMap);
+    public String get(String key) {
+        return stringRedisTemplate.opsForValue().get(key);
     }
 
-    public Object get(String key) {
+    public Object getObject(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public <T> T get(String key, Class<T> clazz) {
+    public <T> T getObjWithCls(String key, Class<T> clazz) {
 
         Object result = redisTemplate.opsForValue().get(key);
 
@@ -49,33 +57,24 @@ public class RedisServiceImpl {
 
     //插入一条记录到Redis中的Hash中
     public void putOneToHash(String key, Object mapKey, Object mapValue) {
-        redisTemplate.opsForHash().put(key, mapKey, mapValue);
+        stringRedisTemplate.opsForHash().put(key, mapKey, mapValue);
     }
 
     public void putAllToHash(String key, Map<Object, Object> valueMap) {
-        redisTemplate.opsForHash().putAll(key, valueMap);
+        stringRedisTemplate.opsForHash().putAll(key, valueMap);
     }
 
-    public void putObjToHash(String key, Object object) throws IllegalAccessException {
-
-
-        Field[] fields = object.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
-            field.setAccessible(true);
-            String fieldName = field.getName();
-            Object fieldValue = field.get(object);
-            putOneToHash(key, fieldName, fieldValue);
-        }
+    public void putObjToHash(String key, Object object) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        stringRedisTemplate.opsForHash().putAll(key, RedisUtils.objectToMap(object));
     }
 
     //获取Redis中的Hash中的一条记录
-    public Object getOneFromHash(String key, Object mapKey) {
-        return redisTemplate.opsForHash().get(key, mapKey);
+    public String getOneFromHash(String key, Object mapKey) {
+        return (String) stringRedisTemplate.opsForHash().get(key, mapKey);
     }
 
     public Map<Object, Object> getMapFromHash(String key) {
-        return redisTemplate.opsForHash().entries(key);
+        return stringRedisTemplate.opsForHash().entries(key);
     }
 
     //修改Redis的Hash中的一条记录
@@ -85,20 +84,12 @@ public class RedisServiceImpl {
             return false;
         }
 
-        redisTemplate.opsForHash().put(key, mapKey, mapValue);
+        stringRedisTemplate.opsForHash().put(key, mapKey, mapValue);
 
         return true;
     }
 
-    public Integer addOneToInt(String key) {
-        Integer value = get(key, Integer.class);
-        set(key, ++value);
-        return value;
-    }
-
-    public Long addOneToLong(String key) {
-        Long value = get(key, Long.class);
-        set(key, ++value);
-        return value;
+    public Long increase(String key) {
+        return stringRedisTemplate.opsForValue().increment(key);
     }
 }

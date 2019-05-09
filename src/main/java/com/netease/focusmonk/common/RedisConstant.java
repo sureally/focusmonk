@@ -20,6 +20,8 @@ public interface RedisConstant {
     String PREFIX_INROOM = "inroom";
     String SUFFIX_ROOM_PEOPLE_NUMBER = "people_number";
 
+    String IN_ROOM_FLAG = "isInRoom";
+
     // 用户信息 value 对应的 hashkey 常量
     String USER_ROOM_ID = "userRoomId";
     String START_TIME = "starTime";

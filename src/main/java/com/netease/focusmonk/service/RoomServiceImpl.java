@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author hejiecheng
@@ -71,7 +72,7 @@ public class RoomServiceImpl {
         return roomMapper.untiedRoom(room) == 1;
     }
 
-    public JsonResult enterRoom(String userId, String roomId) throws IllegalAccessException {
+    public JsonResult enterRoom(String userId, String roomId) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         //获取房间人数Key
         String roomPeoNumKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId, RedisConstant.SUFFIX_ROOM_PEOPLE_NUMBER});
@@ -81,7 +82,7 @@ public class RoomServiceImpl {
         }
 
         //获取房间人数
-        Integer peopleNum = redisService.get(roomPeoNumKey, Integer.class);
+        int peopleNum = Integer.parseInt(redisService.get(roomPeoNumKey));
 
         if (peopleNum >= 12) {
             return JsonResult.getCustomResult(ResultCode.FULL_ROOM_ERROR);
@@ -89,29 +90,29 @@ public class RoomServiceImpl {
 
         String[] inRoomKeys = {RedisConstant.PREFIX_INROOM, userId};
         String inRoomKey = RedisUtils.generateKey(inRoomKeys);
-        Boolean isInRoom = redisService.get(inRoomKey, Boolean.class);
+        String isInRoom = redisService.get(inRoomKey);
 
         if (isInRoom != null) {
             return JsonResult.getCustomResult(ResultCode.USER_REPEATEDLY_ENTERS_ROOM_ERROR);
         }
 
-        redisService.set(inRoomKey, true);
+        redisService.set(inRoomKey, RedisConstant.IN_ROOM_FLAG);
 
-        redisService.addOneToInt(roomPeoNumKey);
+        redisService.increase(roomPeoNumKey);
 
         String[] roomInfoKeys = {RedisConstant.PREFIX_ROOM, roomId};
         String roomInfoKey = RedisUtils.generateKey(roomInfoKeys);
 
-        RoomRedis roomRedis = redisService.get(roomInfoKey, RoomRedis.class);
+        RoomRedis roomRedis = redisService.getObjWithCls(roomInfoKey, RoomRedis.class);
 
         roomRedis.getMemberList().add(userId);
         int roomUserId = roomRedis.getNumAndIncr();
 
-        redisService.set(roomInfoKey, roomRedis);
+        redisService.setObject(roomInfoKey, roomRedis);
 
         RedisUserInfo userInfo = new RedisUserInfo();
         userInfo.setUserRoomId(roomUserId);
-        userInfo.setState(0);
+        userInfo.setState(1);
 
         String[] redisUserInfoKeys = {RedisConstant.PREFIX_ROOM, roomId, RedisConstant.PREFIX_USER, userId};
         String redisUserInfoKey = RedisUtils.generateKey(redisUserInfoKeys);

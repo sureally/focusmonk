@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author hejiecheng
@@ -43,12 +44,11 @@ public class RoomController {
      * @param roomName
      * @param roomIntroduce
      * @return
-     * @throws Exception
      */
     @RequestMapping(value = "/addRoom", method = RequestMethod.POST)
     public JsonResult addRoom(@RequestParam(value = "jwt") String jwt,
                               @RequestParam(value = "roomName") String roomName,
-                              @RequestParam(value = "roomIntroduce") String roomIntroduce) throws Exception {
+                              @RequestParam(value = "roomIntroduce") String roomIntroduce) {
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
         String userId = sessionInfo.getString("userId");
@@ -81,7 +81,7 @@ public class RoomController {
 
     @RequestMapping(value = "/untiedRoom", method = RequestMethod.POST)
     public JsonResult untiedRoom(@RequestParam(value = "jwt") String jwt,
-                                 @RequestParam(value = "roomId") String roomId) throws Exception {
+                                 @RequestParam(value = "roomId") String roomId) {
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
         String userId = sessionInfo.getString("userId");
@@ -116,8 +116,10 @@ public class RoomController {
             return roomService.enterRoom(userId, roomId);
         } catch (IllegalAccessException e) {
             log.error("用户信息存入Redis hash失败", e);
-            return JsonResult.getCustomResult(ResultCode.USER_INFO_PUT_REDIS_HASH_ERROR);
+        } catch (NoSuchMethodException | InvocationTargetException e) {
+            e.printStackTrace();
         }
+        return JsonResult.getCustomResult(ResultCode.USER_INFO_PUT_REDIS_HASH_ERROR);
     }
 
     @GetMapping("/exit")

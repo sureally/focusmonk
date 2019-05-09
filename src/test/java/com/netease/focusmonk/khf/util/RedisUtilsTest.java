@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @ClassName RedisUtilsTest
@@ -30,7 +31,7 @@ public class RedisUtilsTest {
     }
 
     @Test
-    public void testPutObjToHash() throws IllegalAccessException {
+    public void testPutObjToHash() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         RedisUserInfo redisUserInfo = new RedisUserInfo();
         redisUserInfo.setRestTime(100L);
         redisUserInfo.setStarTime(100L);

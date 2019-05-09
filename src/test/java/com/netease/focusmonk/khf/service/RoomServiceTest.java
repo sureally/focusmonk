@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -34,28 +35,26 @@ public class RoomServiceTest {
     public void testEnterRoom() {
 
         RoomRedis roomRedis = new RoomRedis();
-        roomRedis.setMemberList(new ArrayList<>());
-        roomRedis.setNumber(0);
 
         String roomPeoNumKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, "roomIdKong001", RedisConstant.SUFFIX_ROOM_PEOPLE_NUMBER});
         String roomInfoKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, "roomIdKong001"});
 
-        redisService.set(roomPeoNumKey, 0);
-        redisService.set(roomInfoKey, roomRedis);
+        redisService.set(roomPeoNumKey, "1");
+        redisService.setObject(roomInfoKey, roomRedis);
 
         try {
             roomService.enterRoom("userIdKong001", "roomIdKong001");
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void testGet() throws IllegalAccessException {
+    public void testGet() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         RedisUserInfo redisUserInfo = new RedisUserInfo();
         redisUserInfo.setUserRoomId(123);
-        redisUserInfo.setStarTime(123);
+        redisUserInfo.setStarTime(123L);
 
         redisService.putObjToHash("konghaifeng", redisUserInfo);
 
