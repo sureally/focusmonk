@@ -47,11 +47,12 @@ public class StudyAloneController {
 
         // 持续学习时长（单位：分钟）
         int durationTimeM = taskDetail.getDurationTime() / 60;
-        int bookNum = taskDetail.getBookNum();
-        if (Math.abs(Math.floor(durationTimeM / 20) - bookNum) > 1) {
+        int bookNum = durationTimeM / 20;
+        taskDetail.setBookNum(bookNum);
+        /*if (Math.abs(Math.floor(durationTimeM / 20) - bookNum) > 1) {
             log.error("error info : {}","学习时长与所获经书数目不匹配");
             return JsonResult.getCustomResult(ResultCode.PARAM_ERROR);
-        }
+        }*/
 
         try {
             taskDetail.setUserId(Integer.valueOf(userId));

@@ -40,7 +40,6 @@ public class TaskDetail {
     @Range(min = 0, max = 2, message = "学习任务完成状态参数错误")
     private Byte taskState;
 
-    @NotNull
     @Range(min = 0, message = "卷数数目错误")
     private Integer bookNum;
 
