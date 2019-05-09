@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author hejiecheng
@@ -30,12 +32,12 @@ public class RoomController {
 
     private final RoomServiceImpl roomService;
 
-    @Resource
-    private RedisServiceImpl redisService;
+    private final RedisServiceImpl redisService;
 
     @Autowired
-    public RoomController(RoomServiceImpl roomService) {
+    public RoomController(RoomServiceImpl roomService, RedisServiceImpl redisService) {
         this.roomService = roomService;
+        this.redisService = redisService;
     }
 
     /**
@@ -74,11 +76,20 @@ public class RoomController {
             log.info("房间初始化失败!");
             return JsonResult.getErrorResult();
         }
+        log.info("创建房间-{}：{}", roomId, roomName);
+        Map<String, String> detail = new HashMap<>();
+        detail.put("roomId", String.valueOf(roomId));
 
-        return JsonResult.getSuccessResult();
+        return JsonResult.getSuccessResult(detail);
     }
 
 
+    /**
+     * 用户和房间进行解绑
+     * @param jwt
+     * @param roomId
+     * @return
+     */
     @RequestMapping(value = "/untiedRoom", method = RequestMethod.POST)
     public JsonResult untiedRoom(@RequestParam(value = "jwt") String jwt,
                                  @RequestParam(value = "roomId") String roomId) {

@@ -25,19 +25,23 @@ import java.lang.reflect.InvocationTargetException;
 @Service
 public class RoomServiceImpl {
 
-    private final StringRedisTemplate redisTemplate;
-
     private final RoomMapper roomMapper;
 
-    @Resource
     private RedisServiceImpl redisService;
 
     @Autowired
-    public RoomServiceImpl(StringRedisTemplate stringRedisTemplate, RoomMapper roomMapper) {
-        this.redisTemplate = stringRedisTemplate;
+    public RoomServiceImpl(RedisServiceImpl redisService, RoomMapper roomMapper) {
+        this.redisService = redisService;
         this.roomMapper = roomMapper;
     }
 
+    /**
+     * 初始化房间信息
+     * @param roomName
+     * @param roomIntroduce
+     * @param userId
+     * @return
+     */
     public int initRoom(String roomName, String roomIntroduce, String userId) {
 
         Room room = new Room();
@@ -56,6 +60,18 @@ public class RoomServiceImpl {
         }
 
         // 在redis中初始化
+        // 加入房间信息
+        RoomRedis roomRedis = new RoomRedis();
+        String roomKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, String.valueOf(room.getId())});
+        redisService.setObject(roomKey, roomRedis);
+        // 初始化人数
+        String roomPeopelKey = RedisUtils.generateKey(new String[]{
+                RedisConstant.PREFIX_ROOM,
+                String.valueOf(room.getId()),
+                RedisConstant.SUFFIX_ROOM_PEOPLE_NUMBER
+        });
+        redisService.set(roomPeopelKey, "0");
+
         return room.getId();
     }
 
