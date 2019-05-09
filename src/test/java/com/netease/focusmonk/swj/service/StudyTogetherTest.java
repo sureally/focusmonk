@@ -1,9 +1,11 @@
 package com.netease.focusmonk.swj.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.netease.focusmonk.common.CommonConstant;
 import com.netease.focusmonk.common.RedisConstant;
 import com.netease.focusmonk.model.TaskDetail;
 import com.netease.focusmonk.service.StudyTogetherServiceImpl;
+import com.netease.focusmonk.utils.JWTUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,12 +30,25 @@ public class StudyTogetherTest {
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    private void printObj(Object obj) {
+        System.out.println(obj);
+    }
+    @Test
+    public void getInRoomTest() throws Exception {
+        int a = 0;
+        printObj(a);
+    }
+
     @Test
     public void otherTest() throws Exception {
-        String jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJ1c2VySWRcIjo1fSIsImp0aSI6Ijc2ZDZlNTY5LWVhNDctNGFkOC04MDdjLWJhZTgzOGQyYTRjNiIsImlhdCI6MTU1NzExMDk1OCwiZXhwIjoxNTU3MzcwMTU4fQ.IKdTtn5ssVnbHXKrZ6JhnCny-J5pFhRuVdv2PvMyRv8";
+        String jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJ1c2VySWRcIjozfSIsImp0aSI6ImQ1M2U5ZDU1LWVjZDktNDM4NC04ZmUwLWMyMGUxMmFiMGQ0YyIsImlhdCI6MTU1NzMwMzYwNiwiZXhwIjoxNTU3NTYyODA2fQ.ZOSAmC8wgs8kQ7D11g_32dBNLsL_He0NCMZNwK2o0Ng";
 
         Map<String, Object> map = new Hashtable<>();
-        String userId = "5";
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        int userId = Integer.valueOf(sessionInfo.getString("userId"));
+
         int roomId = 0;
         Date now = new Date();
         String key = RedisConstant.PREFIX_ROOM + CommonConstant.REDIS_KEY_SPLICING_SYMBOL + roomId +
@@ -48,8 +63,7 @@ public class StudyTogetherTest {
 
 
         TaskDetail taskDetail = new TaskDetail();
-        taskDetail.setUserId(Integer.valueOf(userId));
-        taskDetail.setSummaryId(55);
+        taskDetail.setUserId(userId);
         taskDetail.setPlanTime(80);
         taskDetail.setTask("测试多人学习");
         taskDetail.setType(Byte.valueOf("1"));
@@ -59,19 +73,20 @@ public class StudyTogetherTest {
         studyTogetherService.setValueForStart(jwt, 0);
         System.out.println("========= 开始学习 ==========");
         printAllUserinfoInRedis(key);
-        Thread.sleep(5000);
+        Thread.sleep(30000);
         System.out.println("========= 持续 10000ms ==========");
 
         System.out.println("========= 暂停学习 ==========");
         studyTogetherService.setValueForPause(jwt, roomId);
         printAllUserinfoInRedis(key);
-        Thread.sleep(10000);
+        Thread.sleep(30000);
         System.out.println("========= 持续 10000ms ==========");
 
         System.out.println("========= 恢复学习 ==========");
         studyTogetherService.setValueForRestart(jwt, roomId);
         printAllUserinfoInRedis(key);
 
+        Thread.sleep(30000);
         System.out.println("========= 持续 10000ms ==========");
         System.out.println("========= 结束学习 ==========");
         studyTogetherService.setValueForFinish(jwt, roomId, taskDetail);

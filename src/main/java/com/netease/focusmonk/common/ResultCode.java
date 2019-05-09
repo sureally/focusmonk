@@ -24,7 +24,9 @@ public enum ResultCode {
     CODE_INVALID("001001", "code invalid"),
     CODE_ERROR("001002", "code error"),
 
-
+    // 多人学习，学习接口 by shu wj
+    STUDY_TOGETHER_PARAM_ERROR("007001", " 多人学习接口请求参数异常"),
+    STUDY_TOGETHER_GENERAL_ERROR("007002", " 多人学习接口通用异常"),
 
     // Start Write By KHF.
 

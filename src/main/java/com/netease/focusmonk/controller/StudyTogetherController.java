@@ -1,6 +1,11 @@
 package com.netease.focusmonk.controller;
 
 import com.netease.focusmonk.common.JsonResult;
+import com.netease.focusmonk.common.ResultCode;
+import com.netease.focusmonk.exception.GeneralException;
+import com.netease.focusmonk.exception.ParamException;
+import com.netease.focusmonk.model.RedisTaskDetailAO;
+import com.netease.focusmonk.model.TaskDetail;
 import com.netease.focusmonk.service.StudyTogetherServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * @ClassName com.netease.focusmonk.controller.StudyTogetherController
@@ -27,25 +34,68 @@ public class StudyTogetherController {
     @RequestMapping(path = "/startStudy", method = RequestMethod.GET)
     public JsonResult startStudy(@RequestParam("jwt") String jwt,
                                  int roomId) throws Exception{
-        studyTogetherService.setValueForStart(jwt, roomId);
+        try {
+            studyTogetherService.setValueForStart(jwt, roomId);
+        } catch (ParamException pe) {
+            log.error("多人学习接口请求参数异常：", pe);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
+        } catch (GeneralException ge) {
+            log.error("多人学习接口通用异常：", ge);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_GENERAL_ERROR, ge.getMessage());
+        }
         return JsonResult.getSuccessResult();
     }
 
     @RequestMapping(path = "/pauseStudy", method = RequestMethod.GET)
     public JsonResult pauseStudy(@RequestParam("jwt") String jwt,
-                                 int roomId){
+                                 int roomId) throws Exception {
+        try {
+            studyTogetherService.setValueForPause(jwt, roomId);
+        } catch (ParamException pe) {
+            log.error("多人学习接口请求参数异常：", pe);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
+        } catch (GeneralException ge) {
+            log.error("多人学习接口通用异常：", ge);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_GENERAL_ERROR, ge.getMessage());
+        }
         return JsonResult.getSuccessResult();
     }
 
     @RequestMapping(path = "/restartStudy", method = RequestMethod.GET)
     public JsonResult restartStudy(@RequestParam("jwt") String jwt,
-                                 int roomId){
+                                 int roomId) throws Exception {
+        try {
+            studyTogetherService.setValueForRestart(jwt, roomId);
+        } catch (ParamException pe) {
+            log.error("多人学习接口请求参数异常：", pe);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
+        } catch (GeneralException ge) {
+            log.error("多人学习接口通用异常：", ge);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_GENERAL_ERROR, ge.getMessage());
+        }
         return JsonResult.getSuccessResult();
     }
 
     @RequestMapping(path = "/finishStudy", method = RequestMethod.GET)
-    public JsonResult finishStudy(@RequestParam("jwt") String jwt,
-                                 int roomId){
+    public JsonResult finishStudy(@Valid RedisTaskDetailAO redisTaskDetailAO,
+                                  @RequestParam("jwt") String jwt,
+                                  int roomId) throws Exception {
+        TaskDetail taskDetail = new TaskDetail();
+        taskDetail.setPlanTime(redisTaskDetailAO.getPlanTime());
+        taskDetail.setType(redisTaskDetailAO.getType());
+        taskDetail.setTaskState(redisTaskDetailAO.getTaskState());
+        if (redisTaskDetailAO.getTask() != null) {
+            taskDetail.setTask(redisTaskDetailAO.getTask());
+        }
+        try {
+            studyTogetherService.setValueForFinish(jwt, roomId, taskDetail);
+        } catch (ParamException pe) {
+            log.error("多人学习接口请求参数异常：", pe);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_PARAM_ERROR, pe.getMessage());
+        } catch (GeneralException ge) {
+            log.error("多人学习接口通用异常：", ge);
+            return new JsonResult(ResultCode.STUDY_TOGETHER_GENERAL_ERROR, ge.getMessage());
+        }
         return JsonResult.getSuccessResult();
     }
 
