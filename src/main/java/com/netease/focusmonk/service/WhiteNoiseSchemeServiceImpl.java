@@ -27,6 +27,9 @@ public class WhiteNoiseSchemeServiceImpl {
     @Autowired
     private WhiteNoiseSchemeDetailServiceImpl whiteNoiseSchemeDetailService;
 
+    @Autowired
+    private WhiteNoiseElementServiceImpl whiteNoiseElementService;
+
     /**
      * 新增一个方案
      * @param wns
@@ -50,6 +53,9 @@ public class WhiteNoiseSchemeServiceImpl {
     @Transactional(rollbackFor = Exception.class)
     public void deleteOneScheme(int schemeId) {
         whiteNoiseSchemeDetailService.deleteBySchemeId(schemeId);
+        if (whiteNoiseSchemeMapper.selectByPrimaryKey(schemeId) == null) {
+            throw new ParamException("待删除白噪声方案不存在：schemeId=" + schemeId);
+        }
         whiteNoiseSchemeMapper.deleteByPrimaryKey(schemeId);
         log.info("删除白噪声方案: {}", "schemeId=" + schemeId);
     }
@@ -156,6 +162,9 @@ public class WhiteNoiseSchemeServiceImpl {
 
         for (int i = 0; i < elementIds.length; i++) {
             WhiteNoiseSchemeDetail wnds = new WhiteNoiseSchemeDetail();
+            if (whiteNoiseElementService.selectByElementId(elementIds[i]) == null) {
+                throw new ParamException("未在数据库中查询到声音元素elementId=" + elementIds[i]);
+            }
             wnds.setElementId(elementIds[i]);
             wnds.setVolume(volumes[i]);
             wnds.setSchemeId(schemeId);

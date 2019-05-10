@@ -27,4 +27,13 @@ public class WhiteNoiseElementServiceImpl {
     public List<WhiteNoiseElement> listAll() {
         return whiteNoiseElementMapper.listAll();
     }
+
+    /**
+     * 根据Id获取一条数据
+     * @param elementId
+     * @return
+     */
+    public WhiteNoiseElement selectByElementId(int elementId) {
+        return whiteNoiseElementMapper.selectByPrimaryKey(elementId);
+    }
 }
