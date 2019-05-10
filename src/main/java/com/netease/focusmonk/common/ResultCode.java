@@ -28,7 +28,9 @@ public enum ResultCode {
     FULL_ROOM_ERROR("004001", "该房间已经满员"),
     USER_REPEATEDLY_ENTERS_ROOM_ERROR("004002", "用户不得重复进入房间"),
     USER_INFO_PUT_REDIS_HASH_ERROR("004003", "用户信息格式有误"),
-    ROOM_NOT_EXIST_ERROR("004003", "该房间不存在"),
+    ROOM_NOT_EXIST_ERROR("004004", "该房间不存在"),
+    USER_EXITED_ROOM("004005", "用户已退出房间"),
+    USER_EXIT_ROOM_ERROR("004006", "用户退出房间异常"),
     // 多人学习，学习接口 by shu wj
     STUDY_TOGETHER_PARAM_ERROR("007001", " 多人学习接口请求参数异常"),
     STUDY_TOGETHER_GENERAL_ERROR("007002", " 多人学习接口通用异常"),

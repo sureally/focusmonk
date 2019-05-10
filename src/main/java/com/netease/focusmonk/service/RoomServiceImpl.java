@@ -10,11 +10,11 @@ import com.netease.focusmonk.model.RoomRedis;
 import com.netease.focusmonk.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 /**
  * @author hejiecheng
@@ -88,6 +88,7 @@ public class RoomServiceImpl {
         return roomMapper.untiedRoom(room) == 1;
     }
 
+    @Transactional
     public JsonResult enterRoom(String userId, String roomId) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         //获取房间人数Key
@@ -121,13 +122,19 @@ public class RoomServiceImpl {
 
         RoomRedis roomRedis = redisService.getObjWithCls(roomInfoKey, RoomRedis.class);
 
+        if (roomRedis == null) {
+            return JsonResult.getCustomResult(ResultCode.ROOM_NOT_EXIST_ERROR);
+        }
+
         roomRedis.getMemberList().add(userId);
-        int roomUserId = roomRedis.getNumAndIncr();
+        roomRedis.getNumAndIncr();
 
         redisService.setObject(roomInfoKey, roomRedis);
 
         RedisUserInfo userInfo = new RedisUserInfo();
-        userInfo.setUserRoomId(roomUserId);
+        userInfo.setUserId(Integer.parseInt(userId));
+        userInfo.setRoomId(Integer.parseInt(roomId));
+        userInfo.setStarTime(new Date().getTime());
         userInfo.setState(1);
 
         String[] redisUserInfoKeys = {RedisConstant.PREFIX_ROOM, roomId, RedisConstant.PREFIX_USER, userId};
@@ -136,5 +143,31 @@ public class RoomServiceImpl {
         redisService.putObjToHash(redisUserInfoKey, userInfo);
 
         return JsonResult.getCustomResult(ResultCode.SUCCESS);
+    }
+
+    @Transactional
+    public JsonResult exitRoom(String userId, String roomId) {
+
+        String roomInfoKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId});
+
+        RoomRedis roomInfo = redisService.getObjWithCls(roomInfoKey, RoomRedis.class);
+
+        if (!roomInfo.getMemberList().contains(userId)) {
+            return JsonResult.getCustomResult(ResultCode.USER_EXITED_ROOM);
+        }
+
+        boolean isRemoved = roomInfo.getMemberList().remove(userId);
+        System.out.println(isRemoved);
+
+        String roomPeoNumKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId, RedisConstant.SUFFIX_ROOM_PEOPLE_NUMBER});
+        redisService.increase(roomPeoNumKey, -1);
+
+        String inRoomKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_INROOM, userId});
+        redisService.remove(inRoomKey);
+
+        String redisUserInfoKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId, RedisConstant.PREFIX_USER, userId});
+        redisService.remove(redisUserInfoKey);
+
+        return JsonResult.getSuccessResult();
     }
 }

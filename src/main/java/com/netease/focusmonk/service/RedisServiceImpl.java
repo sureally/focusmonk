@@ -92,4 +92,12 @@ public class RedisServiceImpl {
     public Long increase(String key) {
         return stringRedisTemplate.opsForValue().increment(key);
     }
+
+    public Long increase(String key, long num) {
+        return stringRedisTemplate.opsForValue().increment(key, num);
+    }
+
+    public Boolean remove(String key) {
+        return stringRedisTemplate.delete(key);
+    }
 }

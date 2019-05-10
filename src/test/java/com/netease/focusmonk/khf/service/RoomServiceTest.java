@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -53,7 +52,7 @@ public class RoomServiceTest {
     public void testGet() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         RedisUserInfo redisUserInfo = new RedisUserInfo();
-        redisUserInfo.setUserRoomId(123);
+        redisUserInfo.setUserId(123);
         redisUserInfo.setStarTime(123L);
 
         redisService.putObjToHash("konghaifeng", redisUserInfo);
@@ -63,5 +62,50 @@ public class RoomServiceTest {
         for (Object value : map.values()) {
             System.out.println(value);
         }
+    }
+
+
+    @Test
+    public void testEnterAndExitRoom() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        String userId = "Konghaifeng";
+        String roomId = "MyRoom";
+
+        roomService.enterRoom(userId, roomId);
+
+        System.out.println("================= Enter Room =================");
+
+        String roomInfoKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId});
+        RoomRedis roomInfo = redisService.getObjWithCls(roomInfoKey, RoomRedis.class);
+        System.out.println("房间人数：" + roomInfo.getMemberList().size());
+
+        String roomPeoNumKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId, RedisConstant.SUFFIX_ROOM_PEOPLE_NUMBER});
+        System.out.println("房间人数：" + redisService.get(roomPeoNumKey));
+
+        String inRoomKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_INROOM, userId});
+        System.out.println("User 是否在房内：" + redisService.get(inRoomKey));
+
+        String redisUserInfoKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId, RedisConstant.PREFIX_USER, userId});
+        System.out.println("用户信息" + redisService.getMapFromHash(redisUserInfoKey).get("nickName"));
+
+        System.out.println("================= Enter Room =================");
+
+        roomService.exitRoom(userId, roomId);
+
+        System.out.println("================= Exit Room =================");
+
+        roomInfoKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId});
+        roomInfo = redisService.getObjWithCls(roomInfoKey, RoomRedis.class);
+        System.out.println("房间人数：" + roomInfo.getMemberList().size());
+
+        roomPeoNumKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId, RedisConstant.SUFFIX_ROOM_PEOPLE_NUMBER});
+        System.out.println("房间人数：" + redisService.get(roomPeoNumKey));
+
+        inRoomKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_INROOM, userId});
+        System.out.println("User 是否在房内：" + redisService.get(inRoomKey));
+
+        redisUserInfoKey = RedisUtils.generateKey(new String[]{RedisConstant.PREFIX_ROOM, roomId, RedisConstant.PREFIX_USER, userId});
+        System.out.println("用户信息" + redisService.getMapFromHash(redisUserInfoKey).get("nickName"));
+        System.out.println("================= Exit Room =================");
     }
 }
