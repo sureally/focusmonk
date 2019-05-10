@@ -8,6 +8,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * @Description 通用全局异常处理
@@ -65,5 +66,13 @@ public class GeneralExceptionHandler {
         return JsonResult.getCustomResult(ResultCode.REQUEST_PARAMETER_EXCEPTION);
     }
 
+    @ResponseBody
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public JsonResult requestParameterExceptionHandler(MethodArgumentTypeMismatchException msrpe) {
+
+        log.error("捕获到请求参数异常 MissingServletRequestParameterException", msrpe);
+
+        return JsonResult.getCustomResult(ResultCode.REQUEST_PARAMETER_EXCEPTION);
+    }
 
 }
