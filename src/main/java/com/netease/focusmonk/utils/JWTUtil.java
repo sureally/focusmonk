@@ -109,8 +109,7 @@ public class JWTUtil {
                 .compact();
 
         // 在JWT字符串前添加"Bearer "字符串，用于加入"Authorization"请求头
-        // return JWT_SEPARATOR + compact;
-        return compact;
+        return JWT_SEPARATOR + compact;
     }
 
     /**
@@ -160,7 +159,7 @@ public class JWTUtil {
      */
     public static Jws<Claims> parseJWT(String claimsJws) {
         // 移除 JWT 前的"Bearer "字符串
-        // claimsJws = StringUtils.substringAfter(claimsJws, JWT_SEPARATOR);
+        claimsJws = StringUtils.substringAfter(claimsJws, JWT_SEPARATOR);
         // 解析 JWT 字符串
         return Jwts.parser().setSigningKey(generateKey(JWT_ALG, JWT_RULE)).parseClaimsJws(claimsJws);
     }
