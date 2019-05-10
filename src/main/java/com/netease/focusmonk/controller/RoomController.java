@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,18 +110,15 @@ public class RoomController {
     }
 
     @GetMapping("/enter")
-    public JsonResult enter(@RequestParam(value = "jwt") String jwt,
-                                @RequestParam(value = "roomId") String roomId) {
+    public JsonResult enter(HttpServletRequest request,
+                            @RequestParam(value = "roomId") String roomId) {
 
-        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
-        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
-        String userId = sessionInfo.getString("userId");
-        if (userId == null || userId.isEmpty()) {
-            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
-        }
+        String userId = (String) request.getAttribute("userId");
 
-        if (roomId == null || StringUtils.isBlank(roomId)) {
-            return JsonResult.getCustomResult(ResultCode.REQUEST_PARAMETER_EXCEPTION);
+        JsonResult validateParam = validate(userId, roomId);
+
+        if (validateParam != null) {
+            return validateParam;
         }
 
         try {
@@ -130,12 +128,40 @@ public class RoomController {
         } catch (NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
+
         return JsonResult.getCustomResult(ResultCode.USER_INFO_PUT_REDIS_HASH_ERROR);
     }
 
     @GetMapping("/exit")
-    public JsonResult exitRoom() {
-        //TODO
+    public JsonResult exitRoom(HttpServletRequest request,
+                               @RequestParam(value = "roomId") String roomId) {
+
+        String userId = (String) request.getAttribute("userId");
+
+        JsonResult validateParam = validate(userId, roomId);
+
+        if (validateParam != null) {
+            return validateParam;
+        }
+
+        try {
+            return roomService.exitRoom(userId, roomId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JsonResult.getCustomResult(ResultCode.USER_EXIT_ROOM_ERROR);
+    }
+
+    private JsonResult validate(String userId, String roomId) {
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+
+        if (roomId == null || StringUtils.isBlank(roomId)) {
+            return JsonResult.getCustomResult(ResultCode.REQUEST_PARAMETER_EXCEPTION);
+        }
+
         return null;
     }
 }

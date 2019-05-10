@@ -5,7 +5,6 @@ import com.netease.focusmonk.service.RedisServiceImpl;
 import com.netease.focusmonk.utils.RedisUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -37,7 +36,7 @@ public class RedisUtilsTest {
         redisUserInfo.setStarTime(100L);
         redisUserInfo.setStartRestTime(100L);
         redisUserInfo.setState(1);
-        redisUserInfo.setUserRoomId(1);
+        redisUserInfo.setRoomId(1);
         redisService.putObjToHash("testPutObjToHash", redisUserInfo);
     }
 

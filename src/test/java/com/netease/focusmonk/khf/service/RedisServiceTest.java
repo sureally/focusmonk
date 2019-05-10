@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -50,7 +51,7 @@ public class RedisServiceTest {
     public void testMapToObj() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         RedisUserInfo redisUserInfo = new RedisUserInfo();
-        redisUserInfo.setUserRoomId(0001);
+        redisUserInfo.setStarTime(new Date().getTime());
 
         redisService.putObjToHash("userInfoObj", redisUserInfo);
         Map<Object, Object> userInfoObj = redisService.getMapFromHash("userInfoObj");
