@@ -35,10 +35,11 @@ public class WhiteNoiseSchemeDetailServiceImpl {
         return whiteNoiseSchemeDetailMapper.selectBySchemeId(schemeId);
     }
 
-    /** 根据白噪声方案schemeId，进行批量删除
+    /** 根据白噪声方案schemeId，进行声音配置详情的批量删除
      * @param schemeId
      */
     public void deleteBySchemeId(Integer schemeId) {
+        // 因为是批量删除，不排除排除的声音元素配置中的元素实际在数据库中不存在的情景
         whiteNoiseSchemeDetailMapper.deleteBySchemeId(schemeId);
         log.info("删除白噪声方案详情配置: {}", "schemeId=" + schemeId);
     }
