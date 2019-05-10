@@ -21,6 +21,8 @@ public enum ResultCode {
     REQUEST_PARAMETER_EXCEPTION("000004", "Http request parameter error"),
     JWT_ERROR("001003", "jwt error"),
     PERSON_CENTER_ERROR("003002","person center error"),
+    //PUSH异常
+    PUSH_ERROR("003003","push error"),
     CODE_INVALID("001001", "code invalid"),
     CODE_ERROR("001002", "code error"),
 
