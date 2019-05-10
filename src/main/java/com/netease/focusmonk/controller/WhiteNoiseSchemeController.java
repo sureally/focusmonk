@@ -70,7 +70,6 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/deleteOneScheme", method = RequestMethod.DELETE)
     public JsonResult deleteOneScheme(@RequestParam("schemeId") int schemeId) throws Exception {
-        // TODO: 未做参数验证，即使数据库中不存在schemeId的方案时，也返回成功，相当于没有动作。
         whiteNoiseSchemeService.deleteOneScheme(schemeId);
         return JsonResult.getSuccessResult();
     }
