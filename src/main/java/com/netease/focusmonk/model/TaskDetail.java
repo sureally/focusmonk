@@ -35,9 +35,9 @@ public class TaskDetail {
     @Length(max = 64, message = "任务名字数个数范围：0~64")
     private String task;
 
-    //0-未完成学习目标，1-完成目标-时间学习时间小于计划时间，2-实际学习时间大于等于计划学习时间
+    //0-未完成学习目标，1-完成目标
     @NotNull
-    @Range(min = 0, max = 2, message = "学习任务完成状态参数错误")
+    @Range(min = 0, max = 1, message = "学习任务完成状态参数错误")
     private Byte taskState;
 
     @Range(min = 0, message = "卷数数目错误")
