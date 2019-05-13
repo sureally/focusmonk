@@ -167,10 +167,8 @@ public class RoomController {
     }
 
     @GetMapping("/enter")
-    public JsonResult enter(HttpServletRequest request,
+    public JsonResult enter(@RequestParam(value = "userId") String userId,
                             @RequestParam(value = "roomId") String roomId) {
-
-        String userId = (String) request.getAttribute("userId");
 
         JsonResult validateParam = validate(userId, roomId);
 
@@ -190,11 +188,8 @@ public class RoomController {
     }
 
     @GetMapping("/exit")
-    public JsonResult exitRoom(HttpServletRequest request,
+    public JsonResult exitRoom(@RequestParam(value = "userId") String userId,
                                @RequestParam(value = "roomId") String roomId) {
-
-        String userId = (String) request.getAttribute("userId");
-
         JsonResult validateParam = validate(userId, roomId);
 
         if (validateParam != null) {

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -24,9 +25,7 @@ public class StudyAloneController {
     
     @PostMapping("/addTaskDetail")
     @ResponseBody
-    public JsonResult addTaskDetail(@Valid TaskDetail taskDetail, HttpServletRequest request) {
-
-        String userId = (String) request.getAttribute("userId");
+    public JsonResult addTaskDetail(@Valid TaskDetail taskDetail, @RequestParam(value = "userId") String userId, HttpServletRequest request) {
 
         if (!StringUtils.isNotBlank(userId)) {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
