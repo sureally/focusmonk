@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = CheckDurationTimeValidator.class)
 public @interface CheckDurationTime {
 
-    String message() default "学习时间区间与持续学习时间不匹配";
+    String message() default "学习时间区间与持续学习时间不匹配，或学习状态有误";
 
     Class<?>[] groups() default {};
 

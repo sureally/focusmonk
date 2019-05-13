@@ -36,7 +36,7 @@ public class TaskDetail {
     private Integer durationTime;
 
     @NotNull(message = "计划学习时长不能为空", groups = NotNull.List.class)
-    @Range(min = 0, message = "计划学习时长有误", groups = Range.List.class)
+    @Range(min = 0, max = 7200,message = "计划学习时长有误", groups = Range.List.class)
     private Integer planTime;
 
     @Length(max = 64, message = "任务名字数个数范围：0~64", groups = Length.List.class)

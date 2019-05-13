@@ -2,9 +2,11 @@ package com.netease.focusmonk.validator;
 
 import com.netease.focusmonk.annotation.CheckDurationTime;
 import com.netease.focusmonk.model.TaskDetail;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -31,7 +33,13 @@ public class CheckDurationTimeValidator implements ConstraintValidator<CheckDura
             return false;
         }
 
+        int planTime = taskDetail.getPlanTime();
         int durationTime = taskDetail.getDurationTime();
+        int taskState = taskDetail.getTaskState();
+
+        if (planTime > durationTime && taskState == 1 || planTime <= durationTime && taskState == 0) {
+            return false;
+        }
 
         long difference = (endTime.getTime() - startTime.getTime()) / 1000 - durationTime;
 
