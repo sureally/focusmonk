@@ -43,7 +43,7 @@ public class WhiteNoiseSchemeController {
     @RequestMapping(value = "/addOneScheme", method = RequestMethod.POST)
     public JsonResult addOneScheme(@Valid WhiteNoiseScheme wns,
                                    @RequestParam("jwt") String jwt,
-                                   @RequestParam("volume") int[] volumes,
+                                   @RequestParam("volume") double[] volumes,
                                    @RequestParam("elementId") int[] elementIds) throws Exception {
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
@@ -83,7 +83,7 @@ public class WhiteNoiseSchemeController {
     @RequestMapping(value = "/updateOneScheme", method = RequestMethod.POST)
     public JsonResult updateOneScheme(@Valid WhiteNoiseScheme wns,
                                       @RequestParam("jwt") String jwt,
-                                      @RequestParam("volume") int[] volumes,
+                                      @RequestParam("volume") double[] volumes,
                                       @RequestParam("elementId") int[] elementIds) throws Exception {
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);

@@ -4,12 +4,14 @@ import com.netease.focusmonk.dao.WhiteNoiseSchemeMapper;
 import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
 import com.netease.focusmonk.model.WhiteNoiseSchemeDetail;
+import com.netease.focusmonk.model.WhiteNoiseSchemeDetailDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
 
 /**
  * @ClassName com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl
@@ -38,7 +40,7 @@ public class WhiteNoiseSchemeServiceImpl {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public int addOneScheme(WhiteNoiseScheme wns, int[] volumes, int[] elementIds) throws Exception {
+    public int addOneScheme(WhiteNoiseScheme wns, double[] volumes, int[] elementIds) throws Exception {
         whiteNoiseSchemeMapper.insert(wns);
         int newSchemeId = wns.getId();
         insertSchemeDetails(newSchemeId, volumes, elementIds);
@@ -68,7 +70,7 @@ public class WhiteNoiseSchemeServiceImpl {
      */
     @Transactional(rollbackFor = Exception.class)
     public void updateOneScheme(WhiteNoiseScheme wns,
-                                int[] volumes,
+                                double[] volumes,
                                 int[] elementIds) throws Exception {
         whiteNoiseSchemeMapper.updateByPrimaryKeySelective(wns);
         if (wns.getId() == null || wns.getId() <= 0) {
@@ -140,7 +142,8 @@ public class WhiteNoiseSchemeServiceImpl {
         wns.setUserId(0);
         schemeDetail.put("scheme", wns);
 
-        List<WhiteNoiseSchemeDetail> wnsds = whiteNoiseSchemeDetailService.selectBySchemeId(schemeId);
+        List<WhiteNoiseSchemeDetailDTO> wnsds = whiteNoiseSchemeDetailService.selectBySchemeId2DTO(schemeId);
+
         if (wnsds != null) {
             schemeDetail.put("schemeDetail", wnsds);
         } else {
@@ -155,12 +158,20 @@ public class WhiteNoiseSchemeServiceImpl {
      * @param volumes
      * @param elementIds
      */
-    private void insertSchemeDetails(int schemeId, int[] volumes, int[] elementIds) {
+    private void insertSchemeDetails(int schemeId, double[] volumes, int[] elementIds) {
         if (!Objects.equals(volumes.length, elementIds.length)) {
             throw new ParamException("声音volumes与elements长度不匹配");
         }
+        Set<Integer> set = new HashSet<>();
+        for (int i = elementIds.length - 1; i >= 0; i--) {
 
-        for (int i = 0; i < elementIds.length; i++) {
+            // 判断elementIds中是否存在相同元素，如果存在则后者覆盖前者(抛弃前者)
+            if (set.contains(elementIds[i])) {
+                continue;
+            } else {
+                set.add(elementIds[i]);
+            }
+
             WhiteNoiseSchemeDetail wnds = new WhiteNoiseSchemeDetail();
             if (whiteNoiseElementService.selectByElementId(elementIds[i]) == null) {
                 throw new ParamException("未在数据库中查询到声音元素elementId=" + elementIds[i]);

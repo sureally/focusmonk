@@ -19,7 +19,5 @@ public class WhiteNoiseScheme {
     private String name;
 
     @NotNull(message = "变速值不能为空")
-    @Min(value = 0, message = "变速值不能小雨0")
-    @Max(value = 100, message = "变速值最大为100")
-    private Integer speed;
+    private Double speed;
 }

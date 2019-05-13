@@ -5,7 +5,7 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="scheme_id" property="schemeId" jdbcType="INTEGER" />
     <result column="element_id" property="elementId" jdbcType="INTEGER" />
-    <result column="volume" property="volume" jdbcType="INTEGER" />
+    <result column="volume" property="volume" jdbcType="DOUBLE" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, scheme_id, element_id, volume
@@ -24,7 +24,7 @@
     insert into white_noise_scheme_detail (id, scheme_id, element_id, 
       volume)
     values (#{id,jdbcType=INTEGER}, #{schemeId,jdbcType=INTEGER}, #{elementId,jdbcType=INTEGER}, 
-      #{volume,jdbcType=INTEGER})
+      #{volume,jdbcType=DOUBLE})
   </insert>
   <insert id="insertSelective" parameterType="com.netease.focusmonk.model.WhiteNoiseSchemeDetail" >
     insert into white_noise_scheme_detail
@@ -53,7 +53,7 @@
         #{elementId,jdbcType=INTEGER},
       </if>
       <if test="volume != null" >
-        #{volume,jdbcType=INTEGER},
+        #{volume,jdbcType=DOUBLE},
       </if>
     </trim>
   </insert>
@@ -67,7 +67,7 @@
         element_id = #{elementId,jdbcType=INTEGER},
       </if>
       <if test="volume != null" >
-        volume = #{volume,jdbcType=INTEGER},
+        volume = #{volume,jdbcType=DOUBLE},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
@@ -76,7 +76,7 @@
     update white_noise_scheme_detail
     set scheme_id = #{schemeId,jdbcType=INTEGER},
       element_id = #{elementId,jdbcType=INTEGER},
-      volume = #{volume,jdbcType=INTEGER}
+      volume = #{volume,jdbcType=DOUBLE}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
