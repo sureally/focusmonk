@@ -19,8 +19,8 @@ public class JWTInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String jwt = request.getParameter("jwt");
-        if (jwt != null && !jwt.isEmpty() && JWTUtil.checkJWT(jwt)) {
+        String userId = request.getParameter("userId");
+        if (userId != null && !userId.isEmpty()) {
             return true;
         }
 

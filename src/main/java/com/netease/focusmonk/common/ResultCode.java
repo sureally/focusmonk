@@ -23,8 +23,11 @@ public enum ResultCode {
     PERSON_CENTER_ERROR("003002","person center error"),
     //PUSH异常
     PUSH_ERROR("003003","push error"),
+    //登录异常
     CODE_INVALID("001001", "code invalid"),
     CODE_ERROR("001002", "code error"),
+    PHONE_ERROR("001004", "手机号不正确"),
+    USERNAME_ERROR("001005", "用户名不能为空"),
 
     //多人共同学习
     FULL_ROOM_ERROR("004001", "该房间已经满员"),

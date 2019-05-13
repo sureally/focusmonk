@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * @author hejiecheng
@@ -32,14 +33,14 @@ import java.util.Random;
 @RequestMapping("/SDSController")
 public class SDSController {
 
-    private final DeviceWebSocketHandler deviceWebSocketHandler;
     private final LoginServiceImpl loginService;
     private final SMSServiceImpl smsService;
 
+    private final static String[] nickName = {"一禅","一休","贤二"};
+    private final static String phoneReg = "^[1]([3-9])[0-9]{9}$";
+
     @Autowired
-    public SDSController(DeviceWebSocketHandler deviceWebSocketHandler,
-                         LoginServiceImpl loginService, SMSServiceImpl smsService) {
-        this.deviceWebSocketHandler = deviceWebSocketHandler;
+    public SDSController(LoginServiceImpl loginService, SMSServiceImpl smsService) {
         this.loginService = loginService;
         this.smsService = smsService;
     }
@@ -54,6 +55,10 @@ public class SDSController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public JsonResult login(@RequestParam(value = "phone") String phone,
                             @RequestParam(value = "code") String code) throws Exception {
+        // 验证手机号
+        if (judgePhone(phone)) {
+            return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
+        }
         // 验证验证码
         if (code.length() != 6) {
             return JsonResult.getCustomResult(ResultCode.CODE_ERROR);
@@ -69,7 +74,7 @@ public class SDSController {
             // 说明这个是一个新用户
             user = new User();
             user.setPhone(phone);
-            user.setUsername("小和尚"+codeGenerate());
+            user.setUsername(phone + codeGenerate());
             loginService.addNewUser(user);
             detail.put("type", "new");
         } else {
@@ -87,24 +92,6 @@ public class SDSController {
     }
 
     /**
-     * 登出接口，暂不使用
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public JsonResult logout(HttpServletRequest request) throws Exception {
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            String username = session.getAttribute("username").toString();
-            deviceWebSocketHandler.sendMessageToUser(username, SocketMsgCode.SUCCESS_LOGOUT.getJson());
-            session.invalidate();
-        }
-        return JsonResult.getSuccessResult();
-    }
-
-    /**
      * 验证码发送接口
      * @param phone
      * @return
@@ -113,6 +100,10 @@ public class SDSController {
     @RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
     public JsonResult sendSMS(@RequestParam(value = "phone") String phone) throws Exception {
         log.info("验证码请求手机号：{}", phone);
+        // 验证手机号
+        if (judgePhone(phone)) {
+            return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
+        }
         if (smsService.sendCode(phone)) {
             // 发送成功
             return JsonResult.getSuccessResult();
@@ -144,12 +135,18 @@ public class SDSController {
      */
     private String codeGenerate() {
         Random random = new Random();
-        String result="";
-        for (int i=0;i<6;i++)
-        {
-            result+=random.nextInt(10);
-        }
-        return result;
+        int code = random.nextInt(10) % 3;
+        return nickName[code];
     }
 
+    /**
+     * 验证手机号是否正确
+     * @return
+     */
+    private boolean judgePhone(String phone) {
+        if (phone == null || phone.isEmpty() || phone.length() != 11) {
+            return false;
+        }
+        return !Pattern.matches(phoneReg, phone);
+    }
 }
