@@ -28,6 +28,7 @@ public enum ResultCode {
     CODE_ERROR("001002", "code error"),
     PHONE_ERROR("001004", "手机号不正确"),
     USERNAME_ERROR("001005", "用户名不能为空"),
+    SMS_CODE_ERROR("001006","验证码发送失败"),
 
     //多人共同学习
     FULL_ROOM_ERROR("004001", "该房间已经满员"),

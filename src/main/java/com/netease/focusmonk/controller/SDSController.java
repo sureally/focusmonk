@@ -145,7 +145,7 @@ public class SDSController {
      */
     private boolean judgePhone(String phone) {
         if (phone == null || phone.isEmpty() || phone.length() != 11) {
-            return false;
+            return true;
         }
         return !Pattern.matches(phoneReg, phone);
     }
