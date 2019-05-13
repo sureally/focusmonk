@@ -45,6 +45,5 @@ public class JwtDecodeFilter implements Filter {
             log.info("nodecode:{}", uri);
             filterChain.doFilter(servletRequest, servletResponse);
         }
-
     }
 }
