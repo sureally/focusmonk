@@ -43,7 +43,7 @@ public class WhiteNoiseSchemeController {
     @RequestMapping(value = "/addOneScheme", method = RequestMethod.POST)
     public JsonResult addOneScheme(@Valid WhiteNoiseScheme wns,
                                    @RequestParam("jwt") String jwt,
-                                   @RequestParam("volume") int[] volumes,
+                                   @RequestParam("volume") double[] volumes,
                                    @RequestParam("elementId") int[] elementIds) throws Exception {
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
@@ -52,6 +52,12 @@ public class WhiteNoiseSchemeController {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
         }
         wns.setUserId(Integer.valueOf(userId));
+
+        if (!whiteNoiseSchemeService.checkSpeedOrVolumeValid(wns.getSpeed())) {
+            log.error("WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR,
+                    "WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+        }
 
         int newSchemeId = 0;
         try {
@@ -70,7 +76,12 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/deleteOneScheme", method = RequestMethod.DELETE)
     public JsonResult deleteOneScheme(@RequestParam("schemeId") int schemeId) throws Exception {
-        whiteNoiseSchemeService.deleteOneScheme(schemeId);
+        try {
+            whiteNoiseSchemeService.deleteOneScheme(schemeId);
+        } catch (ParamException pe) {
+            log.error("error info:", pe);
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, pe.getMessage());
+        }
         return JsonResult.getSuccessResult();
     }
 
@@ -83,7 +94,7 @@ public class WhiteNoiseSchemeController {
     @RequestMapping(value = "/updateOneScheme", method = RequestMethod.POST)
     public JsonResult updateOneScheme(@Valid WhiteNoiseScheme wns,
                                       @RequestParam("jwt") String jwt,
-                                      @RequestParam("volume") int[] volumes,
+                                      @RequestParam("volume") double[] volumes,
                                       @RequestParam("elementId") int[] elementIds) throws Exception {
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
@@ -92,6 +103,12 @@ public class WhiteNoiseSchemeController {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
         }
         wns.setUserId(Integer.valueOf(userId));
+
+        if (!whiteNoiseSchemeService.checkSpeedOrVolumeValid(wns.getSpeed())) {
+            log.error("WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR,
+                    "WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+        }
 
         if (wns.getId() == null || wns.getId() <= 0) {
             log.error("error info: WhiteNoiseScheme.id 为空");

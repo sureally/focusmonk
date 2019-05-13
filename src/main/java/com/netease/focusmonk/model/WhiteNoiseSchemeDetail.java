@@ -14,5 +14,5 @@ public class WhiteNoiseSchemeDetail {
 
     private Integer elementId;
 
-    private Integer volume;
+    private Double volume;
 }

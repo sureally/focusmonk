@@ -13,4 +13,8 @@ public interface CommonConstant {
 
     // 秒与分钟的转换值
     int SECOND_2_MINUTE = 60;
+
+    double SPEED_VOLUME_ERROR = 0.0001;
+    double SPEED_VOLUME_MAX = 1.0;
+    double SPEED_VOLUME_MIN = 0.0;
 }
