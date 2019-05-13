@@ -27,6 +27,7 @@ public class JwtInterceptorConfig {
         List<String> urlPatterns = new ArrayList<>();
         urlPatterns.add("/RoomController/enter");
         urlPatterns.add("/RoomController/exit");
+        urlPatterns.add("/addTaskDetail");
 
         int urlNum = urlPatterns.size();
 
