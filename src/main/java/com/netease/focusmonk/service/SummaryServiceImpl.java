@@ -27,9 +27,26 @@ public class SummaryServiceImpl {
      * @param pageSize
      * @return
      */
-    public PageInfo<Summary> getDayTaskByUserId(int userId, int pageNum, int pageSize) {
+    public PageInfo<Summary> getDayTaskByUserId(int userId, int pageNum, int pageSize) throws GeneralException {
         List<Summary> listDayTask = summaryMapper.selectDayTaskByUserId(userId);
         String context = null;
+        if(listDayTask.size()<=pageSize){
+            if(pageNum>1){
+                throw new GeneralException("不存在当前页");
+            }
+        }
+        else{
+            if(listDayTask.size()%pageSize>0){
+                if((listDayTask.size()/pageSize)+1<pageNum){
+                    throw new GeneralException("不存在当前页");
+                }
+            }
+            else{
+                if((listDayTask.size())/pageSize<pageNum){
+                    throw new GeneralException("不存在当前页");
+                }
+            }
+        }
         PageHelper.startPage(pageNum, pageSize);
         List<Summary> dayTasks = summaryMapper.selectByUserId(userId);
         for (int i = 0; i < dayTasks.size(); i++) {
