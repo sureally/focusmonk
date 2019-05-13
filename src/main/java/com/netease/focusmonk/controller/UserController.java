@@ -54,10 +54,15 @@ public class UserController {
     @RequestMapping(value = "/username", method = RequestMethod.POST)
     public JsonResult changeUsername(@RequestParam(value = "username") String username,
                                   @RequestParam(value = "userId") String userId) throws Exception {
+        if (username == null || username.trim().isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.USERNAME_ERROR);
+        }
+        username = username.trim();
         boolean result = userService.updateUserUsername(username, userId);
         if (result) {
             return JsonResult.getSuccessResult();
         } else {
+            log.info("更新用户：{}的用户名：{}发生错误！", userId, username);
             return JsonResult.getErrorResult();
         }
     }

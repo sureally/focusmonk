@@ -34,9 +34,10 @@ public class FeedBackController {
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     public JsonResult feedBackInfo(@RequestParam(value = "info") String info,
                                    @RequestParam(value = "userId") String userId) throws Exception {
-        if (info == null || info.isEmpty()) {
+        if (info == null || info.trim().isEmpty()) {
             return JsonResult.getCustomResult(ResultCode.PARAM_ERROR);
         }
+        info = info.trim();
         info = info.length() > 200 ? info.substring(0,200) : info;
         if (feedBackService.addFeedBackInfo(userId, info)) {
             return JsonResult.getSuccessResult();

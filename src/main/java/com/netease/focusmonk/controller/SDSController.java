@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * @author hejiecheng
@@ -36,6 +37,7 @@ public class SDSController {
     private final SMSServiceImpl smsService;
 
     private final static String[] nickName = {"一禅","一休","贤二"};
+    private final static String phoneReg = "^[1]([3-9])[0-9]{9}$";
 
     @Autowired
     public SDSController(LoginServiceImpl loginService, SMSServiceImpl smsService) {
@@ -53,6 +55,10 @@ public class SDSController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public JsonResult login(@RequestParam(value = "phone") String phone,
                             @RequestParam(value = "code") String code) throws Exception {
+        // 验证手机号
+        if (judgePhone(phone)) {
+            return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
+        }
         // 验证验证码
         if (code.length() != 6) {
             return JsonResult.getCustomResult(ResultCode.CODE_ERROR);
@@ -94,6 +100,10 @@ public class SDSController {
     @RequestMapping(value = "/sendSMS", method = RequestMethod.GET)
     public JsonResult sendSMS(@RequestParam(value = "phone") String phone) throws Exception {
         log.info("验证码请求手机号：{}", phone);
+        // 验证手机号
+        if (judgePhone(phone)) {
+            return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
+        }
         if (smsService.sendCode(phone)) {
             // 发送成功
             return JsonResult.getSuccessResult();
@@ -129,4 +139,14 @@ public class SDSController {
         return nickName[code];
     }
 
+    /**
+     * 验证手机号是否正确
+     * @return
+     */
+    private boolean judgePhone(String phone) {
+        if (phone == null || phone.isEmpty() || phone.length() != 11) {
+            return false;
+        }
+        return !Pattern.matches(phoneReg, phone);
+    }
 }
