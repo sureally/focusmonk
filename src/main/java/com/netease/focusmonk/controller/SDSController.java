@@ -32,14 +32,13 @@ import java.util.Random;
 @RequestMapping("/SDSController")
 public class SDSController {
 
-    private final DeviceWebSocketHandler deviceWebSocketHandler;
     private final LoginServiceImpl loginService;
     private final SMSServiceImpl smsService;
 
+    private final static String[] nickName = {"一禅","一休","贤二"};
+
     @Autowired
-    public SDSController(DeviceWebSocketHandler deviceWebSocketHandler,
-                         LoginServiceImpl loginService, SMSServiceImpl smsService) {
-        this.deviceWebSocketHandler = deviceWebSocketHandler;
+    public SDSController(LoginServiceImpl loginService, SMSServiceImpl smsService) {
         this.loginService = loginService;
         this.smsService = smsService;
     }
@@ -69,7 +68,7 @@ public class SDSController {
             // 说明这个是一个新用户
             user = new User();
             user.setPhone(phone);
-            user.setUsername("小和尚"+codeGenerate());
+            user.setUsername(phone + codeGenerate());
             loginService.addNewUser(user);
             detail.put("type", "new");
         } else {
@@ -84,24 +83,6 @@ public class SDSController {
         // 返回结果
         detail.put("jwt", jwt);
         return JsonResult.getSuccessResult(detail);
-    }
-
-    /**
-     * 登出接口，暂不使用
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
-    public JsonResult logout(HttpServletRequest request) throws Exception {
-
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            String username = session.getAttribute("username").toString();
-            deviceWebSocketHandler.sendMessageToUser(username, SocketMsgCode.SUCCESS_LOGOUT.getJson());
-            session.invalidate();
-        }
-        return JsonResult.getSuccessResult();
     }
 
     /**
@@ -144,12 +125,8 @@ public class SDSController {
      */
     private String codeGenerate() {
         Random random = new Random();
-        String result="";
-        for (int i=0;i<6;i++)
-        {
-            result+=random.nextInt(10);
-        }
-        return result;
+        int code = random.nextInt(10) % 3;
+        return nickName[code];
     }
 
 }

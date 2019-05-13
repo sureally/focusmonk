@@ -1,6 +1,8 @@
 package com.netease.focusmonk.filter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.netease.focusmonk.config.ParameterRequestWrapper;
+import com.netease.focusmonk.utils.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,16 +37,28 @@ public class JwtDecodeFilter implements Filter {
         if (!Arrays.asList(EXCLUDE).contains(uri)) {
             log.info("decode:{}", uri);
             String jwt = request.getParameter("jwt");
+            if (jwt == null || jwt.isEmpty()) {
+                return;
+            }
             Map map = new HashMap(request.getParameterMap());
             log.info("before:{}", jwt);
             map.put("jwt", URLDecoder.decode(jwt, "UTF-8"));
             log.info("after:{}", map.get("jwt"));
+
+            try {
+                String jwtJson = JWTUtil.parseJWT(map.get("jwt").toString()).getBody().getSubject();
+                JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+                String userId = sessionInfo.getString("userId");
+                map.put("userId", userId);
+            } catch (Exception e) {
+                map.put("userId", null);
+            }
+
             ParameterRequestWrapper wrapRequest = new ParameterRequestWrapper(request, map);
             filterChain.doFilter(wrapRequest, servletResponse);
         } else {
             log.info("nodecode:{}", uri);
             filterChain.doFilter(servletRequest, servletResponse);
         }
-
     }
 }
