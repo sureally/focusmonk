@@ -1,5 +1,6 @@
 package com.netease.focusmonk.service;
 
+import com.netease.focusmonk.common.CommonConstant;
 import com.netease.focusmonk.dao.WhiteNoiseSchemeMapper;
 import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.WhiteNoiseScheme;
@@ -12,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-
 /**
  * @ClassName com.netease.focusmonk.service.WhiteNoiseSchemeServiceImpl
  * @Desciption 白噪声方案
@@ -23,6 +23,7 @@ import java.util.*;
 @Slf4j
 @Service
 public class WhiteNoiseSchemeServiceImpl {
+
     @Autowired
     private WhiteNoiseSchemeMapper whiteNoiseSchemeMapper;
 
@@ -154,7 +155,6 @@ public class WhiteNoiseSchemeServiceImpl {
 
     /**
      * 插入一个方案中的所有声音元素的详情
-     * TODO: 未校验 volumes 中数值的大小，理论其应该在【0，1】之间
      * @param schemeId
      * @param volumes
      * @param elementIds
@@ -166,6 +166,10 @@ public class WhiteNoiseSchemeServiceImpl {
 
         Set<Integer> set = new HashSet<>();
         for (int i = elementIds.length - 1; i >= 0; i--) {
+
+            if (!checkSpeedOrVolumeValid(volumes[i])) {
+                throw new ParamException("volume=" + volumes[i] + "数值不在【0-1】之间");
+            }
 
             // 判断elementIds中是否存在相同元素，如果存在则后者覆盖前者(抛弃前者)
             if (set.contains(elementIds[i])) {
@@ -186,6 +190,19 @@ public class WhiteNoiseSchemeServiceImpl {
             whiteNoiseSchemeDetailService.add(wnds);
             log.info("新增白噪声方案的详情配置: {}", wnds.toString());
         }
+    }
+
+    /**
+     * 校验num值是否在【MIN-MAX】之间
+     * @param num
+     * @return
+     */
+    public boolean checkSpeedOrVolumeValid(double num) {
+        if (CommonConstant.SPEED_VOLUME_MIN - num > CommonConstant.SPEED_VOLUME_ERROR ||
+                num - CommonConstant.SPEED_VOLUME_MAX > CommonConstant.SPEED_VOLUME_ERROR) {
+            return false;
+        }
+        return true;
     }
 
 }

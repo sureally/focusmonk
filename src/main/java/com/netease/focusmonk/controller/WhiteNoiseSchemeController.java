@@ -53,6 +53,12 @@ public class WhiteNoiseSchemeController {
         }
         wns.setUserId(Integer.valueOf(userId));
 
+        if (!whiteNoiseSchemeService.checkSpeedOrVolumeValid(wns.getSpeed())) {
+            log.error("WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR,
+                    "WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+        }
+
         int newSchemeId = 0;
         try {
             newSchemeId = whiteNoiseSchemeService.addOneScheme(wns, volumes, elementIds);
@@ -70,13 +76,17 @@ public class WhiteNoiseSchemeController {
      */
     @RequestMapping(value = "/deleteOneScheme", method = RequestMethod.DELETE)
     public JsonResult deleteOneScheme(@RequestParam("schemeId") int schemeId) throws Exception {
-        whiteNoiseSchemeService.deleteOneScheme(schemeId);
+        try {
+            whiteNoiseSchemeService.deleteOneScheme(schemeId);
+        } catch (ParamException pe) {
+            log.error("error info:", pe);
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR, pe.getMessage());
+        }
         return JsonResult.getSuccessResult();
     }
 
     /**
      * 更新一个方案，逻辑是删除该方案的所有声音元素详情，然后新建所有元素详情
-     * TODO：未校验wns中speed的数值大小，理论其应该在【0，1】之间
      * @param volumes
      * @param elementIds
      * @return
@@ -93,6 +103,12 @@ public class WhiteNoiseSchemeController {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
         }
         wns.setUserId(Integer.valueOf(userId));
+
+        if (!whiteNoiseSchemeService.checkSpeedOrVolumeValid(wns.getSpeed())) {
+            log.error("WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+            return new JsonResult(ResultCode.WHITE_NOISE_PARAM_ERROR,
+                    "WhiteNoiseScheme.speed=" + wns.getSpeed() + "数值不在【0-1】之间");
+        }
 
         if (wns.getId() == null || wns.getId() <= 0) {
             log.error("error info: WhiteNoiseScheme.id 为空");
