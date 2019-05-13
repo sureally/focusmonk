@@ -2,12 +2,12 @@ package com.netease.focusmonk.dao;
 
 import com.netease.focusmonk.model.Room;
 
+import java.util.List;
+
 public interface RoomMapper {
     int deleteByPrimaryKey(Integer id);
 
     int insert(Room record);
-
-    int insertSelective(Room record);
 
     Room selectByPrimaryKey(Integer id);
 
@@ -16,4 +16,8 @@ public interface RoomMapper {
     int updateByPrimaryKey(Room record);
 
     int untiedRoom(Room room);
+
+    List<Room> getRoomList();
+
+    List<Room> getUserRoomList(Integer userId);
 }

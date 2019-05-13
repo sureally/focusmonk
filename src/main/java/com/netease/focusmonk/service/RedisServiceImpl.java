@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName RedisServiceImpl
@@ -26,6 +27,10 @@ public class RedisServiceImpl {
 
     public void set(String key, String value) {
         stringRedisTemplate.opsForValue().set(key, value);
+    }
+
+    public void setWithTTL(String key, String value, long ttl) {
+        stringRedisTemplate.opsForValue().set(key, value, ttl, TimeUnit.SECONDS);
     }
 
     public void setObject(String key, Object value) {

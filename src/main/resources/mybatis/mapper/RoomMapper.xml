@@ -7,9 +7,10 @@
     <result column="introduce" property="introduce" jdbcType="VARCHAR" />
     <result column="owner" property="owner" jdbcType="INTEGER" />
     <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="user_count" property="userCount" jdbcType="INTEGER"/>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, introduce, owner, state
+    id, name, introduce, owner, state, user_count
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -24,43 +25,6 @@
   <insert id="insert" parameterType="com.netease.focusmonk.model.Room" useGeneratedKeys="true" keyProperty="id">
     insert into room (name, introduce, owner)
     values (#{name,jdbcType=VARCHAR}, #{introduce,jdbcType=VARCHAR}, #{owner,jdbcType=INTEGER})
-  </insert>
-  <insert id="insertSelective" parameterType="com.netease.focusmonk.model.Room" >
-    insert into room
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        id,
-      </if>
-      <if test="name != null" >
-        name,
-      </if>
-      <if test="introduce != null" >
-        introduce,
-      </if>
-      <if test="owner != null" >
-        owner,
-      </if>
-      <if test="state != null" >
-        state,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="name != null" >
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="introduce != null" >
-        #{introduce,jdbcType=VARCHAR},
-      </if>
-      <if test="owner != null" >
-        #{owner,jdbcType=INTEGER},
-      </if>
-      <if test="state != null" >
-        #{state,jdbcType=INTEGER},
-      </if>
-    </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.netease.focusmonk.model.Room" >
     update room
@@ -77,6 +41,9 @@
       <if test="state != null" >
         state = #{state,jdbcType=INTEGER},
       </if>
+      <if test="userCount != null" >
+        user_count = #{userCount,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -85,7 +52,8 @@
     set name = #{name,jdbcType=VARCHAR},
       introduce = #{introduce,jdbcType=VARCHAR},
       owner = #{owner,jdbcType=INTEGER},
-      state = #{state,jdbcType=INTEGER}
+      state = #{state,jdbcType=INTEGER},
+      user_count = #{userCount,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   
@@ -94,4 +62,19 @@
     set owner = -1
     where id = #{id,jdbcType=INTEGER} and owner = #{owner,jdbcType=INTEGER}
   </update>
+
+  <select id="getRoomList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from room
+    where state = 0
+    order by user_count
+  </select>
+
+  <select id="getUserRoomList" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List" />
+    from room
+    where state = 0 and owner = #{userId,jdbcType=INTEGER}
+  </select>
 </mapper>
