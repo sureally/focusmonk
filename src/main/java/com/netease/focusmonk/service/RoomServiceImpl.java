@@ -1,5 +1,10 @@
 package com.netease.focusmonk.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.RedisConstant;
 import com.netease.focusmonk.common.ResultCode;
@@ -15,6 +20,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author hejiecheng
@@ -73,6 +81,47 @@ public class RoomServiceImpl {
         redisService.set(roomPeopelKey, "0");
 
         return room.getId();
+    }
+
+    /**
+     * 获取某一页的房间信息
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    public PageInfo<Room> getRoomList(Integer pageNum, Integer pageSize) {
+        String key = "room_list_" + pageNum + "_" + pageSize;
+        String roomString = redisService.get(key);
+        if (roomString == null) {
+            PageHelper.startPage(pageNum, pageSize);
+            List<Room> roomList = roomMapper.getRoomList();
+            redisService.setWithTTL(key, JSON.toJSONString(roomList), 30);
+            PageInfo<Room> roomPageInfo = new PageInfo<>(roomList);
+            return roomPageInfo;
+        } else {
+            List<Room> roomList = new ArrayList<>();
+            try {
+                JSONArray roomArray = JSON.parseArray(roomString);
+                for (int i = 0 ; i < roomArray.size(); ++i) {
+                    Room room = JSON.parseObject(roomArray.getJSONObject(i).toJSONString(), Room.class);
+                    roomList.add(room);
+                }
+            } catch (Exception e) {
+                log.info("从redis中读取的房间列表信息解析错误，{}-{}", pageNum, pageSize);
+                return null;
+            }
+            return new PageInfo<>(roomList);
+        }
+    }
+
+    /**
+     * 获取某个用户自己的房间
+     * @param userId
+     * @return
+     */
+    public List<Room> getUserRoomList(String userId) {
+        List<Room> roomList = roomMapper.getUserRoomList(Integer.valueOf(userId));
+        return roomList;
     }
 
     /**

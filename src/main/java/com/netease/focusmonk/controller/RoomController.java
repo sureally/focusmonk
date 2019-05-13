@@ -1,9 +1,11 @@
 package com.netease.focusmonk.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageInfo;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.RedisConstant;
 import com.netease.focusmonk.common.ResultCode;
+import com.netease.focusmonk.model.Room;
 import com.netease.focusmonk.service.RedisServiceImpl;
 import com.netease.focusmonk.service.RoomServiceImpl;
 import com.netease.focusmonk.utils.JWTUtil;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,6 +84,60 @@ public class RoomController {
         detail.put("roomId", String.valueOf(roomId));
 
         return JsonResult.getSuccessResult(detail);
+    }
+
+    /**
+     * 获取房间列表
+     * @param jwt
+     * @param pageNum
+     * @param pageSize
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getHomeList", method = RequestMethod.GET)
+    public JsonResult getRoomList(@RequestParam(value = "jwt") String jwt,
+                                  @RequestParam(value = "pageNum") String pageNum,
+                                  @RequestParam(value = "pageSize") String pageSize) throws Exception {
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        String userId = sessionInfo.getString("userId");
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+
+        Integer pageNumInt = null;
+        Integer pageSizeInt = null;
+        try {
+            pageNumInt = Integer.valueOf(pageNum);
+            pageSizeInt = Integer.valueOf(pageSize);
+        } catch (Exception e) {
+            log.info("获取房间列表参数错误：{}-{}", pageNum, pageSize);
+            return JsonResult.getCustomResult(ResultCode.PARAM_ERROR);
+        }
+
+        PageInfo<Room> roomList = roomService.getRoomList(pageNumInt, pageSizeInt);
+
+        return JsonResult.getSuccessResult(roomList);
+    }
+
+    /**
+     * 获取用户自己的房间
+     * @param jwt
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getUserHomeList", method = RequestMethod.GET)
+    public JsonResult getUserRoomList(@RequestParam(value = "jwt") String jwt) throws Exception {
+        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
+        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
+        String userId = sessionInfo.getString("userId");
+        if (userId == null || userId.isEmpty()) {
+            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
+        }
+
+        List<Room> roomList = roomService.getUserRoomList(userId);
+
+        return JsonResult.getSuccessResult(roomList);
     }
 
 
