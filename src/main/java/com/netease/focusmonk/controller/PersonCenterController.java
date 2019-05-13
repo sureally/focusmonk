@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.netease.focusmonk.common.JsonResult;
 import com.netease.focusmonk.common.ResultCode;
+import com.netease.focusmonk.exception.GeneralException;
 import com.netease.focusmonk.exception.ParamException;
 import com.netease.focusmonk.model.Summary;
 import com.netease.focusmonk.model.TaskDetail;
@@ -89,10 +90,18 @@ public class PersonCenterController {
         if (userId == null || userId.isEmpty()) {
             return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
         }
-        PageInfo<Summary> pageInfo = summaryService.getDayTaskByUserId(Integer.valueOf(userId), pageNum, pageSize);
-        if (pageInfo == null) {
-            log.warn("用户尚未有学习记录");
-            return new JsonResult(ResultCode.PERSON_CENTER_ERROR, "用户尚未有学习记录");
+        if(pageNum==0 ||pageSize==0){
+            return new JsonResult(ResultCode.PARAM_ERROR,"pageNum或pageSize不可为0");
+        }
+        PageInfo<Summary> pageInfo = null;
+        try {
+            pageInfo = summaryService.getDayTaskByUserId(Integer.valueOf(userId), pageNum, pageSize);
+            if (pageInfo == null) {
+                log.warn("用户尚未有学习记录");
+                return new JsonResult(ResultCode.PERSON_CENTER_ERROR, "用户尚未有学习记录");
+            }
+        } catch (GeneralException e) {
+            return new JsonResult(ResultCode.PARAM_ERROR,"不存在当前页");
         }
         return JsonResult.getSuccessResult(pageInfo);
     }
