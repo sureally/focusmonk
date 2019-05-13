@@ -136,13 +136,13 @@ public class PersonCenterController {
             JPushUtils.SendPush(registrationId);
         } catch (APIConnectionException e) {
             log.error("Connection error. Should retry later. ", e);
-            return JsonResult.getCustomResult(ResultCode.PUSH_ERROR);
+            return JsonResult.getCustomResult(ResultCode.PUSH_ERROR,e.getMessage());
         } catch (APIRequestException e) {
             log.error("Error response from JPush server. Should review and fix it. ", e);
             log.info("HTTP Status: " + e.getStatus());
             log.info("Error Code: " + e.getErrorCode());
             log.info("Error Message: " + e.getErrorMessage());
-            return JsonResult.getCustomResult(ResultCode.PUSH_ERROR);
+            return JsonResult.getCustomResult(ResultCode.PUSH_ERROR,e.getErrorMessage());
         }
         return JsonResult.getSuccessResult();
     }

@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * @author zhenghang
+ * @date 2019/5/13
+ */
 public class JPushUtils {
     protected static final Logger LOG = LoggerFactory.getLogger(JPushUtils.class);
 
@@ -24,7 +28,7 @@ public class JPushUtils {
     //极光推送配置的应用master_secret
     protected static final String MASTER_SECRET = "e2f7d05144b36d4ad50ab198";
     //发送的push消息
-    public static final String ALERT = "hi man！please come back your study!!!";
+    public static final String ALERT = "快回来，已积累时长和书卷要消失了";
 
     public static void SendPush(String registrationId) throws APIConnectionException, APIRequestException {
         ClientConfig clientConfig = ClientConfig.getInstance();
@@ -40,8 +44,8 @@ public class JPushUtils {
 //        final PushPayload payload = buildPushObject_android_and_ios();
 //        // For push, all you need do is to build PushPayload object.
 //        PushPayload payload = buildPushObject_all_alias_alert();
-        PushPayload pushPayload = buildPushObject_all_all_alert();
-//        PushPayload pushPayload = buildPushObject_android_cid(registrationId);
+//        PushPayload pushPayload = buildPushObject_all_all_alert();
+        PushPayload pushPayload = buildPushObject_android_cid(registrationId);
         PushResult result = jpushClient.sendPush(pushPayload);
 //        try {
 //
