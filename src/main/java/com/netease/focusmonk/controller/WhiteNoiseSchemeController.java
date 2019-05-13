@@ -76,6 +76,7 @@ public class WhiteNoiseSchemeController {
 
     /**
      * 更新一个方案，逻辑是删除该方案的所有声音元素详情，然后新建所有元素详情
+     * TODO：未校验wns中speed的数值大小，理论其应该在【0，1】之间
      * @param volumes
      * @param elementIds
      * @return

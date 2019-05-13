@@ -154,6 +154,7 @@ public class WhiteNoiseSchemeServiceImpl {
 
     /**
      * 插入一个方案中的所有声音元素的详情
+     * TODO: 未校验 volumes 中数值的大小，理论其应该在【0，1】之间
      * @param schemeId
      * @param volumes
      * @param elementIds
@@ -162,11 +163,14 @@ public class WhiteNoiseSchemeServiceImpl {
         if (!Objects.equals(volumes.length, elementIds.length)) {
             throw new ParamException("声音volumes与elements长度不匹配");
         }
+
         Set<Integer> set = new HashSet<>();
         for (int i = elementIds.length - 1; i >= 0; i--) {
 
             // 判断elementIds中是否存在相同元素，如果存在则后者覆盖前者(抛弃前者)
             if (set.contains(elementIds[i])) {
+                log.warn("新增白噪声方案schemeId=" + schemeId +
+                        "中存在两个相同的elementId=" + elementIds[i] + "，后者已覆盖前者");
                 continue;
             } else {
                 set.add(elementIds[i]);
