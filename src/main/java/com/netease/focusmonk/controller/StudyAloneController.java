@@ -33,7 +33,7 @@ public class StudyAloneController {
 
         // 持续学习时长（单位：分钟）
         int durationTimeM = taskDetail.getDurationTime() / 60;
-        int bookNum = durationTimeM / 20;
+        int bookNum = taskDetail.getTaskState() == 1 ? durationTimeM / 20 : 0;
         taskDetail.setBookNum(bookNum);
 
         try {
