@@ -9,6 +9,7 @@ import com.netease.focusmonk.model.User;
 import com.netease.focusmonk.service.LoginServiceImpl;
 import com.netease.focusmonk.service.SMSServiceImpl;
 import com.netease.focusmonk.utils.JWTUtil;
+import com.netease.focusmonk.utils.MD5Util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,24 +61,28 @@ public class SDSController {
             return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
         }
         // 验证验证码
-        if (code.length() != 6) {
-            return JsonResult.getCustomResult(ResultCode.CODE_ERROR);
-        }
-        if (!smsService.verifyCode(phone, code)) {
-            log.info("手机号：{}，验证码：{}验证失败!", phone, code);
-            return JsonResult.getCustomResult(ResultCode.CODE_INVALID);
-        }
+//        if (code.length() != 6) {
+//            return JsonResult.getCustomResult(ResultCode.CODE_ERROR);
+//        }
+//        if (!smsService.verifyCode(phone, code)) {
+//            log.info("手机号：{}，验证码：{}验证失败!", phone, code);
+//            return JsonResult.getCustomResult(ResultCode.CODE_INVALID);
+//        }
         // 验证新老用户
+        phone = MD5Util.crypt(phone);
         Map<String, Object> detail = new HashMap<>();
         User user = loginService.verifyOldOrNew(phone);
+        String username = "";
         if (user == null) {
             // 说明这个是一个新用户
             user = new User();
             user.setPhone(phone);
-            user.setUsername(phone + codeGenerate());
+            username = nameCode() + codeGenerate();
+            user.setUsername(username);
             loginService.addNewUser(user);
             detail.put("type", "new");
         } else {
+            username = user.getUsername();
             detail.put("type", "old");
         }
         log.info("当前用户id:{}", user.getId());
@@ -88,6 +93,7 @@ public class SDSController {
         String jwt = JWTUtil.buildJWT(sessionJson);
         // 返回结果
         detail.put("jwt", jwt);
+        detail.put("username", username);
         return JsonResult.getSuccessResult(detail);
     }
 
@@ -137,6 +143,15 @@ public class SDSController {
         Random random = new Random();
         int code = random.nextInt(10) % 3;
         return nickName[code];
+    }
+
+    private String nameCode() {
+        Random random = new Random();
+        String code = "";
+        for(int i = 0 ; i < 6; ++ i) {
+            code += random.nextInt(10);
+        }
+        return code;
     }
 
     /**
