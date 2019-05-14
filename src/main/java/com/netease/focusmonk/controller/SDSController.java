@@ -61,13 +61,13 @@ public class SDSController {
             return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
         }
         // 验证验证码
-//        if (code.length() != 6) {
-//            return JsonResult.getCustomResult(ResultCode.CODE_ERROR);
-//        }
-//        if (!smsService.verifyCode(phone, code)) {
-//            log.info("手机号：{}，验证码：{}验证失败!", phone, code);
-//            return JsonResult.getCustomResult(ResultCode.CODE_INVALID);
-//        }
+        if (code.length() != 6) {
+            return JsonResult.getCustomResult(ResultCode.CODE_ERROR);
+        }
+        if (!smsService.verifyCode(phone, code)) {
+            log.info("手机号：{}，验证码：{}验证失败!", phone, code);
+            return JsonResult.getCustomResult(ResultCode.CODE_INVALID);
+        }
         // 验证新老用户
         phone = MD5Util.crypt(phone);
         Map<String, Object> detail = new HashMap<>();
