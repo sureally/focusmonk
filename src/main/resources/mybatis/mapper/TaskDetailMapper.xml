@@ -163,6 +163,6 @@
   </update>
 
   <select id="selectBySummaryIdAndUserId" parameterType="java.util.Map" resultType="com.netease.focusmonk.model.TaskDetail">
-    SELECT * FROM task_detail WHERE summary_id = #{summaryId} AND user_id = #{userId}
+    SELECT * FROM task_detail WHERE summary_id = #{summaryId} AND user_id = #{userId} ORDER BY start_time DESC
   </select>
 </mapper>
