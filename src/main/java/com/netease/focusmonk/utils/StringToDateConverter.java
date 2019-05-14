@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @ClassName StringToDateConverter
@@ -39,6 +40,7 @@ public class StringToDateConverter implements Converter<String, Date> {
                 } else {
                     formatter = new SimpleDateFormat(shortDateFormat);
                 }
+                formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
                 return formatter.parse(source);
             } else if (source.matches("^\\d+$")) {
                 Long lDate = new Long(source);
