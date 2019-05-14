@@ -107,11 +107,12 @@
     <collection property="taskDetailsList" ofType="com.netease.focusmonk.model.TaskDetail" javaType="ArrayList">
       <id column="tid" property="id"/>
       <result column="task" property="task"/>
+        <result column="task_state" property="taskState"/>
     </collection>
   </resultMap>
   
   <select id="selectDayTaskByUserId" resultMap="summaryMap" parameterType="java.lang.Integer">
-    SELECT s.id,s.user_id,s.sum_time,s.sum_book,s.summary_day,t.id AS tid,t.task AS task
+    SELECT s.id,s.user_id,s.sum_time,s.sum_book,s.summary_day,t.id AS tid,t.task AS task,t.task_state AS task_state
     FROM summary s LEFT JOIN task_detail t ON s.id = t.summary_id WHERE s.user_id = #{userId} ORDER BY s.summary_day DESC
   </select>
   

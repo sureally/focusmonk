@@ -54,7 +54,9 @@ public class SummaryServiceImpl {
             Set<String> contextStr = new HashSet<>();
             for (TaskDetail t:taskDetailList
                  ) {
-                contextStr.add(t.getTask());
+                if(t.getTaskState()==1){
+                    contextStr.add(t.getTask());
+                }
             }
             context = StringUtils.join(contextStr.toArray(),",");
 //            dayTasks.get(i).setTaskDetailsList(listDayTask.get(i + (pageNum - 1) * pageSize).getTaskDetailsList());
