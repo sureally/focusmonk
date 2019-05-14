@@ -3,11 +3,9 @@ package com.netease.focusmonk.validator;
 import com.netease.focusmonk.annotation.CheckDurationTime;
 import com.netease.focusmonk.model.TaskDetail;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.Range;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
