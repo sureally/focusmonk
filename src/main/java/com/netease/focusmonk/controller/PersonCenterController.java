@@ -126,7 +126,7 @@ public class PersonCenterController {
         int bookNums = summaryService.getBookNumsBySummaryDay(Integer.valueOf(userId), new Date());
         if (bookNums == 0) {
             log.warn("今天没有学习记录");
-            return JsonResult.getCustomResult(ResultCode.GENERAL_ERROR, bookNums);
+            return JsonResult.getSuccessResult(bookNums);
         }
         return JsonResult.getSuccessResult(bookNums);
     }
