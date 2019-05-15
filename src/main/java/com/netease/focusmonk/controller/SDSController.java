@@ -60,6 +60,9 @@ public class SDSController {
         if (judgePhone(phone)) {
             return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
         }
+        if (!smsService.judgeCodePhone(phone)) {
+            return JsonResult.getCustomResult(ResultCode.SMS_CODE_LIMIT);
+        }
         // 验证验证码
         if (code.length() != 6) {
             return JsonResult.getCustomResult(ResultCode.CODE_ERROR);
@@ -109,6 +112,9 @@ public class SDSController {
         // 验证手机号
         if (judgePhone(phone)) {
             return JsonResult.getCustomResult(ResultCode.PHONE_ERROR);
+        }
+        if (!smsService.judgeSmsPhone(phone)) {
+            return JsonResult.getCustomResult(ResultCode.SMS_SEND_LIMIT);
         }
         if (smsService.sendCode(phone)) {
             // 发送成功

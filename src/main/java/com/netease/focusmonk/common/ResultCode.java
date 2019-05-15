@@ -29,6 +29,14 @@ public enum ResultCode {
     PHONE_ERROR("001004", "手机号不正确"),
     USERNAME_ERROR("001005", "用户名不能为空"),
     SMS_CODE_ERROR("001006","验证码发送失败"),
+    /**
+     * 请求验证码验证的请求间隔验证
+     */
+    SMS_CODE_LIMIT("001007", "验证码请求频繁"),
+    /**
+     * 短信请求间隔验证
+     */
+    SMS_SEND_LIMIT("001008", "短信请求频繁"),
 
     //多人共同学习
     FULL_ROOM_ERROR("004001", "该房间已经满员"),

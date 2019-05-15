@@ -105,4 +105,8 @@ public class RedisServiceImpl {
     public Boolean remove(String key) {
         return stringRedisTemplate.delete(key);
     }
+
+    public Boolean getAndSet(String key, long time) {
+        return stringRedisTemplate.opsForValue().setIfAbsent(key, "1", time, TimeUnit.SECONDS);
+    }
 }
