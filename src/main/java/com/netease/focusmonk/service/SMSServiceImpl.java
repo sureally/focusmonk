@@ -22,9 +22,12 @@ public class SMSServiceImpl {
 
     private final SMSProperties smsProperties;
 
-    public SMSServiceImpl(RestTemplate restTemplate, SMSProperties smsProperties) {
+    private final RedisServiceImpl redisService;
+
+    public SMSServiceImpl(RestTemplate restTemplate, SMSProperties smsProperties, RedisServiceImpl redisService) {
         this.restTemplate = restTemplate;
         this.smsProperties = smsProperties;
+        this.redisService = redisService;
     }
 
     /**
@@ -76,6 +79,24 @@ public class SMSServiceImpl {
         // 发送请求
         HttpEntity<String> responseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
         return statusVerify(responseEntity);
+    }
+
+    /**
+     * 验证码请求间隔验证
+     * @param phone
+     * @return
+     */
+    public boolean judgeCodePhone(String phone) {
+        return redisService.getAndSet("code_" + phone, 5);
+    }
+
+    /**
+     * 验证码短信请求间隔验证
+     * @param phone
+     * @return
+     */
+    public boolean judgeSmsPhone(String phone) {
+        return redisService.getAndSet("sms_" + phone, 30);
     }
 
     /**
