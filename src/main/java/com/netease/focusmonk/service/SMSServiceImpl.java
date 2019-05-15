@@ -87,7 +87,7 @@ public class SMSServiceImpl {
      * @return
      */
     public boolean judgeCodePhone(String phone) {
-        return redisService.getAndSet("code_" + phone, 5);
+        return redisService.getAndSet("code_" + phone, 3);
     }
 
     /**
