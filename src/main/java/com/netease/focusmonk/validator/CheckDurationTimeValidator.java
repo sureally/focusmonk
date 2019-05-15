@@ -52,6 +52,6 @@ public class CheckDurationTimeValidator implements ConstraintValidator<CheckDura
         log.info("=======EndTime:{}========", endTime.toString());
         log.info("=======durationTime:{}========", durationTime);
         log.info("=======difference:{}========", difference);
-        return Math.abs(difference) <= 60;
+        return difference >= 0;
     }
 }
