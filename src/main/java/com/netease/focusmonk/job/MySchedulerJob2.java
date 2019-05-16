@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * @author hejiecheng
  * @Date 2019-05-09
+ * 定时任务距离
  */
 public class MySchedulerJob2 implements Job {
 

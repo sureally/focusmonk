@@ -13,6 +13,7 @@ import java.util.Arrays;
 /**
  * @author hejiecheng
  * @Date 2019-05-05
+ * 拦截器配置
  */
 @Configuration
 public class WebInterceptorConfig implements WebMvcConfigurer {

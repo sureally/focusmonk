@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author hejiecheng
  * @Date 2019-05-09
+ * 任务工厂
  */
 @Component
 public class JobFactory extends AdaptableJobFactory {

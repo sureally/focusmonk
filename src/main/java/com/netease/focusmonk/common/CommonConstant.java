@@ -1,5 +1,8 @@
 package com.netease.focusmonk.common;
 
+/**
+ * 学习情况通用变量
+ */
 public interface CommonConstant {
 
     //每本经书产生时长20分钟

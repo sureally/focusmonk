@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 /**
  * @author hejiecheng
  * @Date 2019-05-05
+ * 对于需要jwt的请求，对jwt进行验证
  */
 public class JWTInterceptor extends HandlerInterceptorAdapter {
 

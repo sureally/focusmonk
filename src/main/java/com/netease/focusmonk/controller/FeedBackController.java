@@ -37,6 +37,9 @@ public class FeedBackController {
         if (info == null || info.trim().isEmpty()) {
             return JsonResult.getCustomResult(ResultCode.PARAM_ERROR);
         }
+        /**
+         * 反馈意见长度限制
+         */
         info = info.trim();
         info = info.length() > 200 ? info.substring(0,200) : info;
         if (feedBackService.addFeedBackInfo(userId, info)) {

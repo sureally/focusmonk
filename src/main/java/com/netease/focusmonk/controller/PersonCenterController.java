@@ -37,11 +37,15 @@ import java.util.*;
 @RequestMapping("/personCenter")
 public class PersonCenterController {
 
-    @Autowired
-    private TaskDetailServiceImpl taskDetailService;
+    private final TaskDetailServiceImpl taskDetailService;
+
+    private final SummaryServiceImpl summaryService;
 
     @Autowired
-    private SummaryServiceImpl summaryService;
+    public PersonCenterController(TaskDetailServiceImpl taskDetailService, SummaryServiceImpl summaryService) {
+        this.taskDetailService = taskDetailService;
+        this.summaryService = summaryService;
+    }
 
     /**
      * 每日详情查询接口

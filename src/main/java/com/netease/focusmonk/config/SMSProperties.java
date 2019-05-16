@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author hejiecheng
  * @Date 2019-05-07
+ * 网易云信配置信息
  */
 @Data
 @Component

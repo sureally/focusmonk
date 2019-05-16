@@ -9,6 +9,7 @@ import java.util.Vector;
 /**
  * @author hejiecheng
  * @Date 2019-05-10
+ * Request中参数map的重构
  */
 public class ParameterRequestWrapper extends HttpServletRequestWrapper {
 

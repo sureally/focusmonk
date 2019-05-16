@@ -31,7 +31,9 @@ import java.util.Map;
 @RequestMapping("/RoomController")
 public class RoomController {
 
+    // 房间名字长度限制
     private final static int ROOM_NAME_LENGTH = 15;
+    // 房间介绍长度限制
     private final static int ROOM_INTRODUCE_LENGTH = 40;
 
     private final RoomServiceImpl roomService;
@@ -46,22 +48,15 @@ public class RoomController {
 
     /**
      * 创建一个房间
-     * @param jwt
+     * @param userId
      * @param roomName
      * @param roomIntroduce
      * @return
      */
     @RequestMapping(value = "/addRoom", method = RequestMethod.POST)
-    public JsonResult addRoom(@RequestParam(value = "jwt") String jwt,
+    public JsonResult addRoom(@RequestParam(value = "userId") String userId,
                               @RequestParam(value = "roomName") String roomName,
                               @RequestParam(value = "roomIntroduce") String roomIntroduce) {
-        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
-        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
-        String userId = sessionInfo.getString("userId");
-        if (userId == null || userId.isEmpty()) {
-            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
-        }
-
         // 参数校验
         if (roomName == null || roomIntroduce == null || roomName.isEmpty() || roomIntroduce.isEmpty()) {
             log.info("创建房间参数错误");
@@ -89,23 +84,14 @@ public class RoomController {
 
     /**
      * 获取房间列表
-     * @param jwt
      * @param pageNum
      * @param pageSize
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/getHomeList", method = RequestMethod.GET)
-    public JsonResult getRoomList(@RequestParam(value = "jwt") String jwt,
-                                  @RequestParam(value = "pageNum") String pageNum,
+    public JsonResult getRoomList(@RequestParam(value = "pageNum") String pageNum,
                                   @RequestParam(value = "pageSize") String pageSize) throws Exception {
-        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
-        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
-        String userId = sessionInfo.getString("userId");
-        if (userId == null || userId.isEmpty()) {
-            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
-        }
-
         Integer pageNumInt = null;
         Integer pageSizeInt = null;
         try {
@@ -123,41 +109,25 @@ public class RoomController {
 
     /**
      * 获取用户自己的房间
-     * @param jwt
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/getUserHomeList", method = RequestMethod.GET)
-    public JsonResult getUserRoomList(@RequestParam(value = "jwt") String jwt) throws Exception {
-        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
-        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
-        String userId = sessionInfo.getString("userId");
-        if (userId == null || userId.isEmpty()) {
-            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
-        }
-
+    public JsonResult getUserRoomList(@RequestParam(value = "userId") String userId) throws Exception {
         List<Room> roomList = roomService.getUserRoomList(userId);
-
         return JsonResult.getSuccessResult(roomList);
     }
 
 
     /**
      * 用户和房间进行解绑
-     * @param jwt
+     * @param userId
      * @param roomId
      * @return
      */
     @RequestMapping(value = "/untiedRoom", method = RequestMethod.POST)
-    public JsonResult untiedRoom(@RequestParam(value = "jwt") String jwt,
+    public JsonResult untiedRoom(@RequestParam(value = "userId") String userId,
                                  @RequestParam(value = "roomId") String roomId) {
-        String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
-        JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
-        String userId = sessionInfo.getString("userId");
-        if (userId == null || userId.isEmpty()) {
-            return JsonResult.getCustomResult(ResultCode.JWT_ERROR);
-        }
-
         if (roomService.untiedRoom(roomId, userId)) {
             return JsonResult.getSuccessResult();
         } else {
@@ -166,6 +136,12 @@ public class RoomController {
         }
     }
 
+    /**
+     * 用户进入房间
+     * @param userId
+     * @param roomId
+     * @return
+     */
     @GetMapping("/enter")
     public JsonResult enter(@RequestParam(value = "userId") String userId,
                             @RequestParam(value = "roomId") String roomId) {
@@ -187,6 +163,12 @@ public class RoomController {
         return JsonResult.getCustomResult(ResultCode.USER_INFO_PUT_REDIS_HASH_ERROR);
     }
 
+    /**
+     * 用户退出房间
+     * @param userId
+     * @param roomId
+     * @return
+     */
     @GetMapping("/exit")
     public JsonResult exitRoom(@RequestParam(value = "userId") String userId,
                                @RequestParam(value = "roomId") String roomId) {

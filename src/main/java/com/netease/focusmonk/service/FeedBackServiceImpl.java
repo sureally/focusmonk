@@ -20,6 +20,12 @@ public class FeedBackServiceImpl {
         this.feedBackMapper = feedBackMapper;
     }
 
+    /**
+     * 添加反馈意见
+     * @param userId
+     * @param info
+     * @return
+     */
     public boolean addFeedBackInfo(String userId, String info) {
         FeedBack feedBack = new FeedBack();
         feedBack.setUserId(Integer.valueOf(userId));

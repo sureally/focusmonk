@@ -8,9 +8,21 @@ import com.google.gson.Gson;
  */
 public enum SocketMsgCode {
 
+    /**
+     * Websocket链接成功
+     */
     SUCCESS_CONNECT("000000", "socket连接成功"),
+    /**
+     * Websocket链接失败
+     */
     FAIL_CONNECT("000001", "socket连接失败"),
+    /**
+     * 用户下线
+     */
     SUCCESS_LOGOUT("000002", "用户以下线"),
+    /**
+     * 用户在另一个设备登录
+     */
     FORCE_LOFOUT_MSG("999999", "您的账号在另外一个设备登录，您被迫下线，当前学习过程自动结束!");
 
     private String code;
