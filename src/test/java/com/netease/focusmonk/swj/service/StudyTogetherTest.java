@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -37,13 +38,13 @@ public class StudyTogetherTest {
     @Test
     public void getInRoomTest() throws Exception {
         int a = 0;
+        Package path = StudyTogetherTest.class.getPackage();
         printObj(a);
     }
 
     @Test
     public void otherTest() throws Exception {
-        String jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJ1c2VySWRcIjozfSIsImp0aSI6ImQ1M2U5ZDU1LWVjZDktNDM4NC04ZmUwLWMyMGUxMmFiMGQ0YyIsImlhdCI6MTU1NzMwMzYwNiwiZXhwIjoxNTU3NTYyODA2fQ.ZOSAmC8wgs8kQ7D11g_32dBNLsL_He0NCMZNwK2o0Ng";
-
+        String jwt = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJ1c2VySWRcIjo1fSIsImp0aSI6IjI2N2QxYTM1LTExZTctNGVmNi1hMzdjLTI3ZmNmNTUyZDE5YiIsImlhdCI6MTU1NzcxNjIwMCwiZXhwIjoxNTU3OTc1NDAwfQ.kzYaUb2QWz-YaACh2BChvZwn9jSCsBrciEEPkyn6ttM";
         Map<String, Object> map = new Hashtable<>();
         String jwtJson = JWTUtil.parseJWT(jwt).getBody().getSubject();
         JSONObject sessionInfo = JSONObject.parseObject(jwtJson);
